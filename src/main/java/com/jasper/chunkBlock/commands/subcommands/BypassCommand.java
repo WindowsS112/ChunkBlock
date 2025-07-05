@@ -1,31 +1,37 @@
-package com.jasper.chunkBlock.commands;
+package com.jasper.chunkBlock.commands.subcommands;
 
+import com.jasper.chunkBlock.commands.SubCommand;
 import com.jasper.chunkBlock.util.BorderStorage;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
-public class BypassCommand implements CommandExecutor {
+public class BypassCommand extends SubCommand {
 
     private boolean hasBypass = false;
     private BorderStorage borderStorage;
 
-    public BypassCommand(BorderStorage borderStorage) {
+    public BypassCommand(String name, String description, String syntax, BorderStorage borderStorage) {
+        super(name,description,syntax);
         this.borderStorage = borderStorage;
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+    public String getName() {
+        return "bypass";
+    }
 
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage("This command can only be used by a player!");
-            return true;
-        }
+    @Override
+    public String getDescription() {
+        return "Bypasses every border, toggable";
+    }
 
+    @Override
+    public String getSyntax() {
+        return "/c bypass <name>";
+    }
+
+    @Override
+    public void perform(Player player, String[] args) {
         toggleBypass(player);
-        return true;
     }
 
     public void toggleBypass(Player player) {
@@ -41,5 +47,6 @@ public class BypassCommand implements CommandExecutor {
             System.out.println("Bypass deactivated.");
         }
     }
+
 }
 

@@ -6,10 +6,6 @@ authors: [Jasper]
 description: A ChunkBlock plugin
 softdepend: [WorldBorderAPI]
 commands:
-  chunk:
-    description: Create or manage your chunk border
-    usage: /chunk
-  reload:
-    description: Reloads the ChunkBlock plugin
-    usage: /reload
-  bypass:
+  c:
+    description: Main command for the ChunkBlock plugin
+    usage: /<command> <subcommand>

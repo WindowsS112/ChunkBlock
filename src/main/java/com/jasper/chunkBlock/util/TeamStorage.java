@@ -24,6 +24,8 @@ public class TeamStorage {
     }
 
     public void addTeam(Team team) {
+        teams.put(team.getTeamName(), team); // <--- voeg toe aan de map
+
         List<String> memberUUIDStrings = team.getMembersOfTeam().stream()
                 .map(UUID::toString)
                 .collect(Collectors.toList());
@@ -34,10 +36,10 @@ public class TeamStorage {
         try {
             teamsstoragefile.save(teamsData);
         } catch (IOException e) {
-            Bukkit.getLogger().info("Couldn't save borderData file.");
-            return;
+            Bukkit.getLogger().info("Couldn't save teams file.");
         }
     }
+
 
     public void loadTeams() {
         if (teamsstoragefile.contains("Teams")) {
@@ -87,27 +89,35 @@ public class TeamStorage {
 
                 // voeg toe aan opslag
                 addTeam(team);
+                Bukkit.getLogger().info("Loaded team: " + team.getTeamName() + " with members: " + team.getMembersOfTeam());
+
             }
+        }
+    }
+
+    public void check(UUID uuid) {
+        for (Team team : teams.values()) {
+            for (UUID member : team.getMembersOfTeam()) {
+                if (member.equals(uuid)) {
+                    Bukkit.getLogger().info("test");
+                }
+                Bukkit.getLogger().info("test2");
+            }
+            Bukkit.getLogger().info("tes3");
+
         }
     }
 
     public boolean isPlayerInAnyTeam(UUID playerUUID) {
-        Bukkit.getLogger().info("Checking if player is in any team: " + playerUUID);
-
-        for (Team team : getTeams().values()) {
-            Bukkit.getLogger().info("Checking team: " + team.getTeamName());
-            Bukkit.getLogger().info("Team members: " + team.getMembersOfTeam());
-
-            if (team.getMembersOfTeam().contains(playerUUID)) {
-                Bukkit.getLogger().info("Player found in team: " + team.getTeamName());
-                return true;
+        for (Team team : teams.values()) {
+            for (UUID member : team.getMembersOfTeam()) {
+                if (member.equals(playerUUID)) {
+                    return true;
+                }
             }
         }
-
-        Bukkit.getLogger().info("Player not found in any team.");
         return false;
     }
-
 
     public Map<String, Team> getTeams() {
         return teams;

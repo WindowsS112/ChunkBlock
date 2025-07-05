@@ -13,10 +13,7 @@ public class Team {
     private final String id;
     private String teamName;
     private Set<UUID> members = new HashSet<>();
-
-    //    private final Set<UUID> coOwners = new HashSet<>();
     private UUID owner;
-//    private final Set<ChunkPos> claimedChunks = new HashSet<>();
 
     public Team(String id, UUID owner, String teamName) {
         this.id = id;
@@ -30,10 +27,16 @@ public class Team {
 
         if (!teamStorage.isPlayerInAnyTeam(uuid)) {
             members.add(uuid);
+            if (player != null) {
+                player.sendMessage(ChatColor.GREEN + "You have joined the team " + getTeamName() + "!");
+            }
         } else {
-            player.sendMessage(ChatColor.RED + "You are already in a chunkparty! " + getTeamName());
+            if (player != null) {
+                player.sendMessage(ChatColor.RED + "You are already in a chunkparty! " + getTeamName());
+            }
         }
     }
+
 
     public String getTeamName() { return teamName; }
 

@@ -17,50 +17,41 @@ import java.io.IOException;
 
 public final class ChunkBlock extends JavaPlugin {
 
+    private BorderStorage borderStorage;
+    private TeamStorage teamStorage;
 
     private File configFile = new File(getDataFolder(), "config.yml");
     private File borderData = new File(getDataFolder(), "borders.yml");
     private File teamsData = new File(getDataFolder(), "teams.yml");
 
-    private BorderStorage borderStorage;
-
     private YamlConfiguration teamsFile;
     YamlConfiguration modifyFile = YamlConfiguration.loadConfiguration(borderData);
-
     private double cSize;
     private FileConfiguration config;
 
     @Override
     public void onEnable() {
-        if (!configFile.exists()) {
-            saveDefaultConfig();
-        }
+
+        if (!configFile.exists()) saveDefaultConfig();
         config = YamlConfiguration.loadConfiguration(configFile);
         cSize = getConfig().getDouble("defaultChunkSize");
 
-        if (!borderData.exists()) {
-            try {
-                borderData.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try {
+            if (!borderData.exists()) borderData.createNewFile();
+            if (!teamsData.exists()) teamsData.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        if (!teamsData.exists()) {
-            try {
-                teamsData.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
         teamsFile = YamlConfiguration.loadConfiguration(teamsData);
-        TeamStorage teamStorage = new TeamStorage(teamsData,this,teamsFile);
-        teamStorage.loadTeams();
 
-        this.borderStorage = new BorderStorage(borderData,this, modifyFile);
+        this.teamStorage = new TeamStorage(teamsData, this, teamsFile);
+        this.teamStorage.loadTeams();
+
+        this.borderStorage = new BorderStorage(borderData, this, modifyFile);
+
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(borderStorage, this), this);
-        CommandManager commandManager = new CommandManager(borderStorage,cSize,borderData,this,teamStorage);
-        getCommand("c").setExecutor(commandManager);
+        getCommand("c").setExecutor(new CommandManager(borderStorage, cSize, borderData, this, teamStorage));
 
         Bukkit.getLogger().info("[ChunkBlock] -> Has Been Started!");
     }
@@ -71,6 +62,10 @@ public final class ChunkBlock extends JavaPlugin {
 
     public FileConfiguration getCustomConfig() {
         return config;
+    }
+
+    public TeamStorage getTeamStorage() {
+        return this.teamStorage;
     }
 
 }

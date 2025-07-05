@@ -1,4 +1,4 @@
-# 🌐 ChunkBlock Plugin
+# 🌐 ChunkBlock
 
 A modern chunk-based island/land-claim plugin inspired by SuperiorSkyblock and ASkyBlock, but designed for land-based gameplay using Minecraft chunks.
 

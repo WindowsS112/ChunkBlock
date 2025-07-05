@@ -12,3 +12,4 @@ commands:
   reload:
     description: Reloads the ChunkBlock plugin
     usage: /reload
+  bypass:

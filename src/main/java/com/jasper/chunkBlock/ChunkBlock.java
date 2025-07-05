@@ -1,9 +1,13 @@
 package com.jasper.chunkBlock;
 
-import com.github.yannicklamprecht.worldborder.api.WorldBorderApi;
+import com.jasper.chunkBlock.commands.BypassCommand;
+import com.jasper.chunkBlock.commands.CreateCommand;
+import com.jasper.chunkBlock.listeners.PlayerJoinListener;
+import com.jasper.chunkBlock.util.BorderStorage;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.RegisteredServiceProvider;
+
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -11,45 +15,48 @@ import java.io.IOException;
 
 public final class ChunkBlock extends JavaPlugin {
 
+
     private File configFile = new File(getDataFolder(), "config.yml");
     private File borderData = new File(getDataFolder(), "borders.yml");
 
+    private BorderStorage borderStorage;  // veld
+    YamlConfiguration modifyFile = YamlConfiguration.loadConfiguration(borderData);
+
     private double cSize;
-    private WorldBorderApi worldBorderApi;
+    private FileConfiguration config;
+
 
     @Override
     public void onEnable() {
         if (!configFile.exists()) {
             saveDefaultConfig();
-        } else {
+        }
+        config = YamlConfiguration.loadConfiguration(configFile);
+        cSize = getConfig().getInt("defaultChunkSize");
+
+        if (!borderData.exists()) {
             try {
-                configFile.createNewFile();
+                borderData.createNewFile();
             } catch (IOException e) {
-                Bukkit.getLogger().info("Can't load file! Error.");
-                return;
+                e.printStackTrace();
             }
-            cSize = getConfig().getInt("defaultChunkSize");
         }
 
-        YamlConfiguration modifyFile = YamlConfiguration.loadConfiguration(borderData);
+        this.borderStorage = new BorderStorage(borderData,this, modifyFile);
+        getServer().getPluginManager().registerEvents(new PlayerJoinListener(borderStorage, this), this);
 
-        RegisteredServiceProvider<WorldBorderApi> provider = getServer().getServicesManager().getRegistration(WorldBorderApi.class);
-
-        getConfig().options().copyDefaults();
-        saveDefaultConfig();
-
-        if (provider == null) {
-            getLogger().warning("WorldBorder API niet gevonden! Plugin wordt uitgeschakeld.");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
-
-        WorldBorderApi worldBorderApi = provider.getProvider();
-
-        getCommand("chunk").setExecutor(new CreateChunk(worldBorderApi, cSize, borderData, modifyFile));
-
+        getCommand("chunk").setExecutor(new CreateCommand(cSize, borderData,this));
+        getCommand("bypass").setExecutor(new BypassCommand(borderStorage));
 
         Bukkit.getLogger().info("[ChunkBlock] -> Has Been Started!");
+    }
+
+    public BorderStorage getBorderStorage() {
+        return this.borderStorage;
+    }
+
+    public FileConfiguration getCustomConfig() {
+        return config;
     }
 
 }

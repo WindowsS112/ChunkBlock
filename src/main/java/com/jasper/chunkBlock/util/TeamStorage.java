@@ -112,6 +112,7 @@ public class TeamStorage {
         teams.remove(team.getTeamName());
         teamsstoragefile.set("Teams." + team.getTeamName(), null);
         saveConfig();
+        loadTeams();
         player.sendMessage(ChatColor.GREEN + "Team " + team.getTeamName() + " succesfully deleted");
     }
 

@@ -38,7 +38,7 @@ public class CommandManager implements CommandExecutor {
         subcommands.add(new CreateTeamCommand("", "", "",plugin,"",teamStorage));
         subcommands.add(new RemoveTeamCommand("", "", "", "", team, teamStorage));
         subcommands.add(new LeaveTeamCommand("","","",team, teamStorage));
-        subcommands.add(new JoinTeamCommand("","","",team,teamStorage));
+        subcommands.add(new JoinTeamCommand("","","",team,teamStorage,borderStorage));
         subcommands.add(new DisbandTeamCommand("","","",team,teamStorage));
         subcommands.add(new ClaimCommand("","","",team,teamStorage, plugin,borderStorage));
     }

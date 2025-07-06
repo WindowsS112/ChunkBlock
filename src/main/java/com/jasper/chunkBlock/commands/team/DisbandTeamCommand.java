@@ -46,6 +46,7 @@ public class DisbandTeamCommand extends SubCommand {
             if (teamStorage.isPlayerInAnyTeam(player.getUniqueId())) {
                 if (teamStorage.checkTeamExist(team) && team.getOwner().equals(player.getUniqueId())) {
                     teamStorage.removeTeam(team, player);
+
                 } else if (!team.getOwner().equals(player.getUniqueId())) {
                     player.sendMessage(ChatColor.RED + "You are not the owner of this team");
                 } else {

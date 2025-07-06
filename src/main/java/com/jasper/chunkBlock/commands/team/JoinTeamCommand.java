@@ -1,6 +1,7 @@
 package com.jasper.chunkBlock.commands.team;
 
 import com.jasper.chunkBlock.commands.SubCommand;
+import com.jasper.chunkBlock.util.BorderStorage;
 import com.jasper.chunkBlock.util.Team;
 import com.jasper.chunkBlock.util.TeamStorage;
 import org.bukkit.ChatColor;
@@ -10,11 +11,13 @@ public class JoinTeamCommand extends SubCommand {
 
     private Team team;
     private TeamStorage teamStorage;
+    private BorderStorage borderStorage;
 
-    public JoinTeamCommand(String name, String description, String syntax, Team team, TeamStorage teamStorage) {
+    public JoinTeamCommand(String name, String description, String syntax, Team team, TeamStorage teamStorage, BorderStorage borderStorage) {
         super(name, description, syntax);
         this.team = team;
         this.teamStorage = teamStorage;
+        this.borderStorage = borderStorage;
     }
 
     @Override
@@ -42,6 +45,7 @@ public class JoinTeamCommand extends SubCommand {
             if (!teamStorage.isPlayerInAnyTeam(player.getUniqueId())) {
                 if (teamStorage.checkTeamExist(team)) {
                     teamStorage.addMemberToTeam(teamName, player.getUniqueId());
+                    borderStorage.loadChunk(team);
                 }
             } else {
                 player.sendMessage(ChatColor.RED + "You are already in a team, leave that first");

@@ -51,7 +51,7 @@ public final class ChunkBlock extends JavaPlugin {
 
         this.borderStorage = new BorderStorage(borderData, this, modifyFile);
 
-        getServer().getPluginManager().registerEvents(new PlayerJoinListener(borderStorage, this), this);
+        getServer().getPluginManager().registerEvents(new PlayerJoinListener(borderStorage, this,team), this);
         getCommand("c").setExecutor(new CommandManager(borderStorage, cSize, borderData,this, teamStorage, team));
 
         Bukkit.getLogger().info("[ChunkBlock] -> Has Been Started!");

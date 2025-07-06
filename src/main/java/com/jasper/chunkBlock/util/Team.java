@@ -1,5 +1,6 @@
 package com.jasper.chunkBlock.util;
 
+import com.jasper.chunkBlock.commands.border.Border;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -16,6 +17,7 @@ public class Team {
     private String teamName;
     private Set<UUID> members = new HashSet<>();
     private UUID owner;
+    private Border border;
 
     public Team(String id, UUID owner, String teamName) {
         this.id = id;
@@ -84,6 +86,14 @@ public class Team {
 
     public Set<UUID> getMembersOfTeam() {
         return members;
+    }
+
+    public void setBorder(Border border) {
+        this.border = border;
+    }
+
+    public Border getBorder() {
+        return border;
     }
 
 }

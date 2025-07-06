@@ -38,19 +38,27 @@ public class LeaveTeamCommand extends SubCommand {
     public void perform(Player player, String[] args) {
         if (args.length > 1) {
             String teamName = args[1];
-            Team team = teamStorage.getTeamByName(teamName);
+            Team team = teamStorage.getTeamByName(teamName); // Always fetch the team by name
 
-            if (teamStorage.isPlayerInAnyTeam(player.getUniqueId())) {
-                if (teamStorage.checkTeamExist(team) && !team.getOwner().equals(player.getUniqueId())) {
-                    teamStorage.removeMemberFromTeam(teamName,player.getUniqueId());
-                } else if (team.getOwner().equals(player.getUniqueId())) {
-                    player.sendMessage(ChatColor.RED + "You are the owner of this team, do /c disband to delete the team");
-                } else {
-                    player.sendMessage(ChatColor.RED + "Team does not exist.");
-                }
-            } else {
-                player.sendMessage(ChatColor.RED + "You don't have a team to leave");
+            if (team == null) {
+                player.sendMessage(ChatColor.RED + "Team does not exist.");
+                return;
             }
+
+            if (!team.getMembersOfTeam().contains(player.getUniqueId())) {
+                player.sendMessage(ChatColor.RED + "You are not a member of this team.");
+                return;
+            }
+
+            if (team.getOwner().equals(player.getUniqueId())) {
+                player.sendMessage(ChatColor.RED + "You are the owner. Use /c disband to delete the team.");
+                return;
+            }
+
+            teamStorage.removeMemberFromTeam(teamName, player.getUniqueId());
+            player.sendMessage(ChatColor.GREEN + "You have left the team " + teamName + ".");
+        } else {
+            player.sendMessage(ChatColor.RED + "Please specify a team name.");
         }
     }
 }

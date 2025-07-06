@@ -162,6 +162,16 @@ public class TeamStorage {
         return teams.get(name);
     }
 
+    public Team getTeamFromPlayer(UUID playerUUID) {
+        for (Team team : teams.values()) { // teams is je Map<String, Team>
+            if (team.getMembersOfTeam().contains(playerUUID)) {
+                return team;
+            }
+        }
+        return null;
+    }
+
+
 
 
 //    public Team getTeamByPlayer(UUID playerId) { ... }

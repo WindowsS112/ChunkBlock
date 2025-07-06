@@ -2,6 +2,7 @@ package com.jasper.chunkBlock.listeners;
 
 import com.jasper.chunkBlock.ChunkBlock;
 import com.jasper.chunkBlock.util.BorderStorage;
+import com.jasper.chunkBlock.util.Team;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,10 +15,12 @@ public class PlayerJoinListener implements Listener {
 
     private final BorderStorage borderStorage;
     private final ChunkBlock plugin;
+    private Team team;
 
-    public PlayerJoinListener(BorderStorage borderStorage, ChunkBlock plugin) {
+    public PlayerJoinListener(BorderStorage borderStorage, ChunkBlock plugin, Team team) {
         this.borderStorage = borderStorage;
         this.plugin = plugin;
+        this.team = team;
     }
 
     @EventHandler
@@ -28,7 +31,7 @@ public class PlayerJoinListener implements Listener {
             @EventHandler
             public void onPlayerMove(PlayerMoveEvent moveEvent) {
                 if (moveEvent.getPlayer().equals(player)) {
-                    borderStorage.loadChunk(player);
+                    borderStorage.loadChunk(team);
 
                     HandlerList.unregisterAll(this);
                 }

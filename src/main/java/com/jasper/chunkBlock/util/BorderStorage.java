@@ -1,6 +1,7 @@
 package com.jasper.chunkBlock.util;
 
 import com.jasper.chunkBlock.ChunkBlock;
+import com.jasper.chunkBlock.commands.border.Border;
 import org.bukkit.*;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -8,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 
 public class BorderStorage {
 
@@ -22,12 +24,13 @@ public class BorderStorage {
         this.borderstoragefile = borderstoragefile;
     }
 
-    public void saveChunk(Player player, double cSize) {
-        borderstoragefile.set("Players." + player.getName() + ".borderSize", cSize);
-        borderstoragefile.set("Players." + player.getName() + ".world", player.getWorld().getName());
-        borderstoragefile.set("Players." + player.getName() + ".x", player.getLocation().getBlockX());
-        borderstoragefile.set("Players." + player.getName() + ".y", player.getLocation().getBlockY());
-        borderstoragefile.set("Players." + player.getName() + ".z", player.getLocation().getBlockZ());
+    public void saveChunk(Team team, Border border) {
+        borderstoragefile.set("Teams." + team.getTeamName() + ".owner", team.getOwner().toString());
+        borderstoragefile.set("Teams." + team.getTeamName() + ".world", border.getWorld().getName());
+        borderstoragefile.set("Teams." + team.getTeamName() + ".radius", border.getRadius());
+        borderstoragefile.set("Teams." + team.getTeamName() + ".center.x", border.getCenter().getX());
+        borderstoragefile.set("Teams." + team.getTeamName() + ".center.y", border.getCenter().getY());
+        borderstoragefile.set("Teams." + team.getTeamName() + ".center.z", border.getCenter().getZ());
 
         try {
             borderstoragefile.save(borderData);
@@ -37,35 +40,42 @@ public class BorderStorage {
         }
     }
 
+    public boolean loadChunk(Team team) {
+        String path = "Teams." + team.getTeamName();
 
-    public boolean loadChunk(Player player) {
-        if (borderstoragefile.contains("Players." + player.getName())) {
-            String path = "Players." + player.getName();
-            String worldName = borderstoragefile.getString("Players." + player.getName() + ".world");
+        if (!borderstoragefile.contains(path)) {
+            Bukkit.getLogger().info("Failed loadchunk command: team not found");
+            return false;
+        }
+
+        try {
+            String worldName = borderstoragefile.getString(path + ".world");
             World world = Bukkit.getWorld(worldName);
-            double cSize = borderstoragefile.getDouble(path + ".borderSize");
-            int locx = borderstoragefile.getInt(path + ".x");
-            int locy = borderstoragefile.getInt(path + ".y");
-            int locz = borderstoragefile.getInt(path + ".z");
-
-            Location location = new Location(world, locx, locy, locz);
-
-            try {
-                WorldBorder border = Bukkit.createWorldBorder();
-                border.setCenter(location);
-                border.setSize(cSize);
-                player.setWorldBorder(border);
-
-                player.sendMessage(ChatColor.GREEN + "Chunk loaded");
-                return true;
-            } catch (Exception e) {
-                player.sendMessage(ChatColor.RED + "Failed to load chunk");
-                e.printStackTrace();
+            if (world == null) {
+                Bukkit.getLogger().warning("World not found: " + worldName);
                 return false;
             }
 
-        } else {
-            player.sendMessage(ChatColor.RED + "You don't have a chunk, create one with /c create");
+            int radius = borderstoragefile.getInt(path + ".radius");
+            int locx = borderstoragefile.getInt(path + ".center.x");
+            int locy = borderstoragefile.getInt(path + ".center.y");
+            int locz = borderstoragefile.getInt(path + ".center.z");
+
+            Location center = new Location(world, locx, locy, locz);
+            Border teamBorder = new Border(center, radius);
+
+            for (UUID uuid : team.getMembersOfTeam()) {
+                Player player = Bukkit.getPlayer(uuid);
+                player.sendMessage("Test");
+                if (player != null && player.isOnline()) {
+                    player.setWorldBorder(teamBorder.toWorldBorder());
+                    player.sendMessage(ChatColor.GREEN + "Chunk loaded");
+                }
+            }
+            return true;
+
+        } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }

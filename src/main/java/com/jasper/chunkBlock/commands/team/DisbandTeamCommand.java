@@ -13,6 +13,8 @@ public class DisbandTeamCommand extends SubCommand {
 
     public DisbandTeamCommand(String name, String description, String syntax, Team team, TeamStorage teamStorage) {
         super(name, description, syntax);
+        this.teamStorage = teamStorage;
+        this.team = team;
     }
 
     @Override
@@ -34,11 +36,16 @@ public class DisbandTeamCommand extends SubCommand {
     public void perform(Player player, String[] args) {
         if (args.length > 1) {
             String teamName = args[1];
-            Team team = teamStorage.getTeamByName(teamName);
+            Team team = teamStorage.getTeamByName(teamName); // Get the team by name
+
+            if (team == null) {
+                player.sendMessage(ChatColor.RED + "Team does not exist.");
+                return;
+            }
 
             if (teamStorage.isPlayerInAnyTeam(player.getUniqueId())) {
                 if (teamStorage.checkTeamExist(team) && team.getOwner().equals(player.getUniqueId())) {
-                    teamStorage.removeTeam(team,player);
+                    teamStorage.removeTeam(team, player);
                 } else if (!team.getOwner().equals(player.getUniqueId())) {
                     player.sendMessage(ChatColor.RED + "You are not the owner of this team");
                 } else {

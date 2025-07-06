@@ -27,6 +27,7 @@ public final class ChunkBlock extends JavaPlugin {
     private YamlConfiguration teamsFile;
     YamlConfiguration modifyFile = YamlConfiguration.loadConfiguration(borderData);
     private double cSize;
+    private Team team;
     private FileConfiguration config;
 
     @Override
@@ -51,7 +52,7 @@ public final class ChunkBlock extends JavaPlugin {
         this.borderStorage = new BorderStorage(borderData, this, modifyFile);
 
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(borderStorage, this), this);
-        getCommand("c").setExecutor(new CommandManager(borderStorage, cSize, borderData, this, teamStorage));
+        getCommand("c").setExecutor(new CommandManager(borderStorage, cSize, borderData,this, teamStorage, team));
 
         Bukkit.getLogger().info("[ChunkBlock] -> Has Been Started!");
     }

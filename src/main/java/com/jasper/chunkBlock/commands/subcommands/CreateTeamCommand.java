@@ -55,9 +55,6 @@ public class CreateTeamCommand extends SubCommand {
             teamName = args[1];
             owner = player.getUniqueId().toString();
 
-
-            teamStorage.check(player.getUniqueId());
-
             if (!teamStorage.isPlayerInAnyTeam(player.getUniqueId())) {
                 Team team = new Team(player.getUniqueId().toString(),player.getUniqueId(),teamName);
                 teamStorage.addTeam(team);

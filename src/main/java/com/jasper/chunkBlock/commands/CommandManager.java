@@ -1,11 +1,9 @@
 package com.jasper.chunkBlock.commands;
 
 import com.jasper.chunkBlock.ChunkBlock;
-import com.jasper.chunkBlock.commands.subcommands.BypassCommand;
-import com.jasper.chunkBlock.commands.subcommands.CreateCommand;
-import com.jasper.chunkBlock.commands.subcommands.CreateTeamCommand;
-import com.jasper.chunkBlock.commands.subcommands.HulpCommand;
+import com.jasper.chunkBlock.commands.subcommands.*;
 import com.jasper.chunkBlock.util.BorderStorage;
+import com.jasper.chunkBlock.util.Team;
 import com.jasper.chunkBlock.util.TeamStorage;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -25,9 +23,10 @@ public class CommandManager implements CommandExecutor {
     private File borderData;
     private ChunkBlock plugin;
     private TeamStorage teamStorage;
+    private Team team;
 
 
-    public CommandManager(BorderStorage borderStorage, double cSize, File borderData, ChunkBlock plugin, TeamStorage teamStorage ) {
+    public CommandManager(BorderStorage borderStorage, double cSize, File borderData, ChunkBlock plugin, TeamStorage teamStorage, Team team ) {
         this.borderStorage = borderStorage;
         this.cSize = cSize;
         this.borderData = borderData;
@@ -36,6 +35,7 @@ public class CommandManager implements CommandExecutor {
         subcommands.add(new CreateCommand("", "", "", cSize, borderData, plugin));
         subcommands.add(new HulpCommand("", "", "", this));
         subcommands.add(new CreateTeamCommand("", "", "",plugin,"",teamStorage));
+        subcommands.add(new RemoveTeamCommand("", "", "", "", team, teamStorage));
     }
 
     @Override

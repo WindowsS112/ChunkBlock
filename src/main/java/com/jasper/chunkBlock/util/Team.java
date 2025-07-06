@@ -37,6 +37,18 @@ public class Team {
         }
     }
 
+    public void leaveTeam(UUID uuid, TeamStorage teamStorage) {
+        Player player = Bukkit.getPlayer(uuid);
+
+        if (teamStorage.isPlayerInAnyTeam(uuid)) {
+            members.remove(uuid);
+        } else {
+            if (player != null) {
+                player.sendMessage(ChatColor.RED + "You don't have a team!");
+            }
+        }
+    }
+
 
     public String getTeamName() { return teamName; }
 

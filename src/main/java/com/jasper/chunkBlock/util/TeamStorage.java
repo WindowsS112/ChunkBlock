@@ -95,19 +95,6 @@ public class TeamStorage {
         }
     }
 
-    public void check(UUID uuid) {
-        for (Team team : teams.values()) {
-            for (UUID member : team.getMembersOfTeam()) {
-                if (member.equals(uuid)) {
-                    Bukkit.getLogger().info("test");
-                }
-                Bukkit.getLogger().info("test2");
-            }
-            Bukkit.getLogger().info("tes3");
-
-        }
-    }
-
     public boolean isPlayerInAnyTeam(UUID playerUUID) {
         for (Team team : teams.values()) {
             for (UUID member : team.getMembersOfTeam()) {
@@ -119,6 +106,10 @@ public class TeamStorage {
         return false;
     }
 
+    public void removeTeam(Team team) {
+        teams.remove(team);
+    }
+
     public Map<String, Team> getTeams() {
         return teams;
     }
@@ -126,7 +117,6 @@ public class TeamStorage {
 //
 //    public Team getTeamByPlayer(UUID playerId) { ... }
 //
-//    public void removeTeam(String id) { ... }
 //
 //    public void saveAll() { ... }
 //

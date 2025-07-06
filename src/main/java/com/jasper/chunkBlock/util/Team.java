@@ -5,8 +5,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class Team {
 
@@ -29,6 +31,18 @@ public class Team {
             members.add(uuid);
             if (player != null) {
                 player.sendMessage(ChatColor.GREEN + "You have joined the team " + getTeamName() + "!");
+                members.add(uuid);
+                teamStorage.saveConfig();
+
+                for (UUID memberUuid : members) {
+                    Player member = Bukkit.getPlayer(memberUuid);
+                    if (member != null) {
+                        Bukkit.getLogger().info("Team member: " + member.getName());
+                    } else {
+                        Bukkit.getLogger().info("Team member UUID: " + memberUuid);
+                    }
+                }
+
             }
         } else {
             if (player != null) {
@@ -42,11 +56,19 @@ public class Team {
 
         if (teamStorage.isPlayerInAnyTeam(uuid)) {
             members.remove(uuid);
+            player.sendMessage(ChatColor.GREEN + "Left: " + getTeamName() + "!");
+
         } else {
             if (player != null) {
                 player.sendMessage(ChatColor.RED + "You don't have a team!");
             }
         }
+    }
+
+    public List<String> getMembersAsStringList() {
+        return members.stream()
+                .map(UUID::toString)
+                .collect(Collectors.toList());
     }
 
 

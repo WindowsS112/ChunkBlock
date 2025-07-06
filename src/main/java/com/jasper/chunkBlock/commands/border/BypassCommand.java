@@ -1,4 +1,4 @@
-package com.jasper.chunkBlock.commands.subcommands;
+package com.jasper.chunkBlock.commands.border;
 
 import com.jasper.chunkBlock.commands.SubCommand;
 import com.jasper.chunkBlock.util.BorderStorage;

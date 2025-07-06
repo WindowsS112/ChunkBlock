@@ -1,9 +1,7 @@
-package com.jasper.chunkBlock.commands.subcommands;
+package com.jasper.chunkBlock.commands.util;
 
 import com.jasper.chunkBlock.commands.CommandManager;
 import com.jasper.chunkBlock.commands.SubCommand;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class HulpCommand extends SubCommand {

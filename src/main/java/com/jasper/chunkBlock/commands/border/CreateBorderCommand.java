@@ -1,4 +1,4 @@
-package com.jasper.chunkBlock.commands.subcommands;
+package com.jasper.chunkBlock.commands.border;
 
 import com.jasper.chunkBlock.ChunkBlock;
 import com.jasper.chunkBlock.commands.SubCommand;
@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import java.io.File;
 
 
-public class CreateCommand extends SubCommand {
+public class CreateBorderCommand extends SubCommand {
 
     private double cSize;
     private final File borderData;
@@ -20,7 +20,7 @@ public class CreateCommand extends SubCommand {
     private final BorderStorage storage;
 
 
-    public CreateCommand(String name, String description, String syntax, double cSize, File borderData1, ChunkBlock plugin) {
+    public CreateBorderCommand(String name, String description, String syntax, double cSize, File borderData1, ChunkBlock plugin) {
         super(name,description,syntax);
         this.cSize = cSize;
         this.borderData = borderData1;

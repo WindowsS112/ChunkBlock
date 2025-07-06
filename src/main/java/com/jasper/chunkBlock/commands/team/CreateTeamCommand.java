@@ -1,16 +1,11 @@
-package com.jasper.chunkBlock.commands.subcommands;
+package com.jasper.chunkBlock.commands.team;
 
 import com.jasper.chunkBlock.commands.SubCommand;
 import com.jasper.chunkBlock.util.Team;
 import com.jasper.chunkBlock.util.TeamStorage;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
 
 public class CreateTeamCommand extends SubCommand {
 
@@ -58,7 +53,7 @@ public class CreateTeamCommand extends SubCommand {
             if (!teamStorage.isPlayerInAnyTeam(player.getUniqueId())) {
                 Team team = new Team(player.getUniqueId().toString(),player.getUniqueId(),teamName);
                 teamStorage.addTeam(team);
-                team.joinTeam(player.getUniqueId(),teamStorage);
+                player.sendMessage(ChatColor.GREEN + "Succesfully created: " + team.getTeamName() + "!");
             } else {
                 player.sendMessage(ChatColor.RED + "You are already in a chunkparty, leave this one first!");
             }

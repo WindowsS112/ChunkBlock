@@ -1,9 +1,8 @@
-package com.jasper.chunkBlock.commands.subcommands;
+package com.jasper.chunkBlock.commands.team;
 
 import com.jasper.chunkBlock.commands.SubCommand;
 import com.jasper.chunkBlock.util.Team;
 import com.jasper.chunkBlock.util.TeamStorage;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -60,10 +59,8 @@ public class RemoveTeamCommand extends SubCommand {
                 return;
             }
 
-            // Remove the team since the player is the owner
-            teamStorage.removeTeam(team);
-            player.sendMessage(ChatColor.GREEN + "Team " + team.getTeamName() + " has been removed.");
-
+            teamStorage.removeTeam(team,player);
+            teamStorage.saveConfig();
         } else {
             player.sendMessage(ChatColor.RED + "Usage: /c removeteam <teamName>");
         }

@@ -4,12 +4,12 @@ import com.jasper.chunkBlock.commands.SubCommand;
 import com.jasper.chunkBlock.util.BorderStorage;
 import org.bukkit.entity.Player;
 
-public class BypassCommand extends SubCommand {
+public class BorderBypassCommand extends SubCommand {
 
     private boolean hasBypass = false;
     private BorderStorage borderStorage;
 
-    public BypassCommand(String name, String description, String syntax, BorderStorage borderStorage) {
+    public BorderBypassCommand(String name, String description, String syntax, BorderStorage borderStorage) {
         super(name,description,syntax);
         this.borderStorage = borderStorage;
     }

@@ -32,9 +32,13 @@ public class PlayerJoinListener implements Listener {
         Listener moveListener = new Listener() {
             @EventHandler
             public void onPlayerMove(PlayerMoveEvent moveEvent) {
-                if (moveEvent.getPlayer().equals(player)) {
-                    borderStorage.loadChunk(team);
+                if (teamStorage.isPlayerInAnyTeam(player.getUniqueId())) {
+                    if (moveEvent.getPlayer().equals(player)) {
+                        borderStorage.loadChunk(team);
 
+                        HandlerList.unregisterAll(this);
+                    }
+                } else {
                     HandlerList.unregisterAll(this);
                 }
             }

@@ -1,9 +1,12 @@
 package com.jasper.chunkBlock.commands;
 
 import com.jasper.chunkBlock.ChunkBlock;
-import com.jasper.chunkBlock.commands.border.BypassCommand;
-import com.jasper.chunkBlock.commands.border.ClaimCommand;
+import com.jasper.chunkBlock.commands.border.BorderBypassCommand;
+import com.jasper.chunkBlock.commands.chunk.ClaimCommand;
+import com.jasper.chunkBlock.commands.chunk.ChunkHomeCommand;
+import com.jasper.chunkBlock.commands.chunk.ChunkSetHomeCommand;
 import com.jasper.chunkBlock.commands.team.*;
+import com.jasper.chunkBlock.commands.util.ChunkGUI;
 import com.jasper.chunkBlock.commands.util.HulpCommand;
 import com.jasper.chunkBlock.util.BorderStorage;
 import com.jasper.chunkBlock.util.Team;
@@ -27,40 +30,47 @@ public class CommandManager implements CommandExecutor {
     private File borderData;
     private ChunkBlock plugin;
 
-
-    public CommandManager(BorderStorage borderStorage, double cSize, File borderData, ChunkBlock plugin, TeamStorage teamStorage, Team team ) {
+    public CommandManager(BorderStorage borderStorage, double cSize, File borderData, ChunkBlock plugin, TeamStorage teamStorage, Team team, Chunk chunk) {
         this.borderStorage = borderStorage;
         this.cSize = cSize;
         this.borderData = borderData;
         this.plugin = plugin;
-        subcommands.add(new BypassCommand("", "", "", this.borderStorage));
+        subcommands.add(new BorderBypassCommand("", "", "", this.borderStorage));
         subcommands.add(new HulpCommand("", "", "", this));
         subcommands.add(new CreateTeamCommand("", "", "",plugin,"",teamStorage));
         subcommands.add(new RemoveTeamCommand("", "", "", "", team, teamStorage));
         subcommands.add(new LeaveTeamCommand("","","",team, teamStorage));
         subcommands.add(new JoinTeamCommand("","","",team,teamStorage,borderStorage));
-        subcommands.add(new DisbandTeamCommand("","","",team,teamStorage));
+        subcommands.add(new DisbandTeamCommand("","","",team,teamStorage,borderStorage));
         subcommands.add(new ClaimCommand("","","",team,teamStorage, plugin,borderStorage));
+        subcommands.add(new ChunkHomeCommand("","","",team, borderStorage, teamStorage));
+        subcommands.add(new ChunkSetHomeCommand("","","",team,borderStorage, teamStorage));
+        subcommands.add(new ChunkGUI("","","",teamStorage));
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
-
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player) {
             Player p = (Player) sender;
-             if (args.length > 0) {
-                for (int i = 0; i < this.getSubCommands().size(); i++ ) {
-                    if (args[0].equalsIgnoreCase(this.getSubCommands().get(i).getName())) {
-                        this.getSubCommands().get(i).perform(p, args);
-
+            if (args.length > 0) {
+                for (SubCommand sub : this.getSubCommands()) {
+                    if (args[0].equalsIgnoreCase(sub.getName())) {
+                        sub.perform(p, args);
                         return true;
                     }
                 }
-            } else if (args.length == 0 ) {
-                 showHelp(p);
-             }
+                showHelp(p);
+            } else {
+                // No arguments: call the ChunkGUI command
+                for (SubCommand sub : this.getSubCommands()) {
+                    if (sub.getName().equalsIgnoreCase("chunk")) {
+                        sub.perform(p, args);
+                        return true;
+                    }
+                }
+                showHelp(p);
+            }
         }
-
         return true;
     }
 

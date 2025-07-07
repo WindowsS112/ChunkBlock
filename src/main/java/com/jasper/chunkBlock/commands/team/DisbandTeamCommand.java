@@ -1,6 +1,7 @@
 package com.jasper.chunkBlock.commands.team;
 
 import com.jasper.chunkBlock.commands.SubCommand;
+import com.jasper.chunkBlock.util.BorderStorage;
 import com.jasper.chunkBlock.util.Team;
 import com.jasper.chunkBlock.util.TeamStorage;
 import org.bukkit.ChatColor;
@@ -8,13 +9,15 @@ import org.bukkit.entity.Player;
 
 public class DisbandTeamCommand extends SubCommand {
     private Team team;
+    private BorderStorage borderStorage;
     private TeamStorage teamStorage;
 
 
-    public DisbandTeamCommand(String name, String description, String syntax, Team team, TeamStorage teamStorage) {
+    public DisbandTeamCommand(String name, String description, String syntax, Team team, TeamStorage teamStorage, BorderStorage borderStorage) {
         super(name, description, syntax);
         this.teamStorage = teamStorage;
         this.team = team;
+        this.borderStorage = borderStorage;
     }
 
     @Override
@@ -46,7 +49,7 @@ public class DisbandTeamCommand extends SubCommand {
             if (teamStorage.isPlayerInAnyTeam(player.getUniqueId())) {
                 if (teamStorage.checkTeamExist(team) && team.getOwner().equals(player.getUniqueId())) {
                     teamStorage.removeTeam(team, player);
-
+                    borderStorage.removeBorder(team.getBorder(), team);
                 } else if (!team.getOwner().equals(player.getUniqueId())) {
                     player.sendMessage(ChatColor.RED + "You are not the owner of this team");
                 } else {

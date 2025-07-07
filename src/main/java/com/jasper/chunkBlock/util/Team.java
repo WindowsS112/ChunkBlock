@@ -3,6 +3,8 @@ package com.jasper.chunkBlock.util;
 import com.jasper.chunkBlock.commands.border.Border;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
@@ -13,14 +15,14 @@ import java.util.stream.Collectors;
 
 public class Team {
 
-    private final String id;
     private String teamName;
     private Set<UUID> members = new HashSet<>();
     private UUID owner;
     private Border border;
+    private final Set<Chunk> ownedChunks = new HashSet<>();
+    private Location home;
 
     public Team(String id, UUID owner, String teamName) {
-        this.id = id;
         this.owner = owner;
         this.teamName = teamName;
         this.members.add(owner);
@@ -73,15 +75,28 @@ public class Team {
                 .collect(Collectors.toList());
     }
 
+    public void onJoin(Player player) {
+        if (player == null) return;
+        for (UUID uuid : members) {
+            Player member = Bukkit.getPlayer(uuid);
+            if (member != null && !member.getUniqueId().equals(player.getUniqueId())) {
+                member.sendMessage(player.getName() + " just joined " + teamName);
+            }
+        }
+    }
+
+    public void setHome(Location location) {
+        this.home = location;
+    }
+
+    public Location getHome() {
+        return home;
+    }
 
     public String getTeamName() { return teamName; }
 
     public UUID getOwner() {
         return this.owner;
-    }
-
-    public void setMembers(Set<UUID> members) {
-        this.members = members;
     }
 
     public Set<UUID> getMembersOfTeam() {

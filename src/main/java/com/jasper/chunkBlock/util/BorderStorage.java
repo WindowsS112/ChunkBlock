@@ -16,12 +16,14 @@ public class BorderStorage {
     private final File borderData;
     private final ChunkBlock plugin;
     private final YamlConfiguration borderstoragefile;
+    private TeamStorage teamStorage;
 
 
-    public BorderStorage(File borderData, ChunkBlock plugin, YamlConfiguration borderstoragefile) {
+    public BorderStorage(File borderData, ChunkBlock plugin, YamlConfiguration borderstoragefile, TeamStorage teamStorage) {
         this.borderData = borderData;
         this.plugin = plugin;
         this.borderstoragefile = borderstoragefile;
+        this.teamStorage = teamStorage;
     }
 
     public void saveChunk(Team team, Border border) {
@@ -66,7 +68,6 @@ public class BorderStorage {
 
             for (UUID uuid : team.getMembersOfTeam()) {
                 Player player = Bukkit.getPlayer(uuid);
-                player.sendMessage("Test");
                 if (player != null && player.isOnline()) {
                     player.setWorldBorder(teamBorder.toWorldBorder());
                     player.sendMessage(ChatColor.GREEN + "Chunk loaded");
@@ -77,6 +78,26 @@ public class BorderStorage {
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    public void removeBorder(Border border, Team team) {
+        borderstoragefile.set("Teams." + team.getTeamName(), null);
+        saveConfig();
+
+        for (UUID uuid : team.getMembersOfTeam()) {
+            Player player = Bukkit.getPlayer(uuid);
+            if (player != null && player.isOnline()) {
+                player.setWorldBorder(null);
+            }
+        }
+    }
+
+    public void saveConfig() {
+        try {
+            borderstoragefile.save(borderData);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

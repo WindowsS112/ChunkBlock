@@ -113,6 +113,7 @@ public class TeamStorage {
         teamsstoragefile.set("Teams." + team.getTeamName(), null);
         saveConfig();
         loadTeams();
+
         player.sendMessage(ChatColor.GREEN + "Team " + team.getTeamName() + " succesfully deleted");
     }
 
@@ -127,6 +128,8 @@ public class TeamStorage {
         List<String> memberUUIDs = team.getMembersAsStringList();
         teamsstoragefile.set("Teams." + teamName + ".members", memberUUIDs);
         saveConfig();
+
+        team.onJoin(Bukkit.getPlayer(playerUUID));
     }
 
     public void removeMemberFromTeam(String teamName, UUID playerUUID) {
@@ -142,7 +145,6 @@ public class TeamStorage {
         saveConfig();
     }
 
-
     public void saveConfig() {
         try {
             teamsstoragefile.save(teamsData);
@@ -152,17 +154,14 @@ public class TeamStorage {
     }
 
     public boolean checkTeamExist(Team team) {
-        return teams.containsKey(team.getTeamName());
+        return teams.containsValue(team);
     }
-
     public Map<String, Team> getTeams() {
         return teams;
     }
-
     public Team getTeamByName(String name) {
         return teams.get(name);
     }
-
     public Team getTeamFromPlayer(UUID playerUUID) {
         for (Team team : teams.values()) { // teams is je Map<String, Team>
             if (team.getMembersOfTeam().contains(playerUUID)) {
@@ -172,9 +171,5 @@ public class TeamStorage {
         return null;
     }
 
-
-
-
-//    public Team getTeamByPlayer(UUID playerId) { ... }
 
 }

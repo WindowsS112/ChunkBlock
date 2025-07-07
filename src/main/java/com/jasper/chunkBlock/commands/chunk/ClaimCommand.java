@@ -1,7 +1,8 @@
-package com.jasper.chunkBlock.commands.border;
+package com.jasper.chunkBlock.commands.chunk;
 
 import com.jasper.chunkBlock.ChunkBlock;
 import com.jasper.chunkBlock.commands.SubCommand;
+import com.jasper.chunkBlock.commands.border.Border;
 import com.jasper.chunkBlock.util.BorderStorage;
 import com.jasper.chunkBlock.util.Team;
 import com.jasper.chunkBlock.util.TeamStorage;
@@ -27,25 +28,6 @@ public class ClaimCommand extends SubCommand {
     }
 
     @Override
-    public String getName() {
-        return "claim";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Claims a chunk for the team";
-    }
-
-    @Override
-    public String getSyntax() {
-        return "/c claim";
-    }
-
-    public void createBorder() {
-
-    }
-
-    @Override
     public void perform(Player player, String[] args) {
         UUID playerUUID = player.getUniqueId();
 
@@ -64,12 +46,9 @@ public class ClaimCommand extends SubCommand {
         Border border = new Border(player.getLocation(), radius);
         team.setBorder(border);
 
-        // Optioneel: opslaan naar bestand
         borderStorage.saveChunk(team, border);
         borderStorage.loadChunk(team);
-
-//        // Optioneel: worldborder instellen voor alle teamleden
-//        border.applyToTeam(team);
+        team.setHome(player.getLocation());
 
         player.sendMessage(ChatColor.GREEN + "Je team heeft nu een border geclaimd op deze locatie met radius " + radius + ".");
     }
@@ -77,5 +56,17 @@ public class ClaimCommand extends SubCommand {
 
     public JavaPlugin getPlugin() {
         return plugin;
+    }
+    @Override
+    public String getName() {
+        return "claim";
+    }
+    @Override
+    public String getDescription() {
+        return "Claims a chunk for the team";
+    }
+    @Override
+    public String getSyntax() {
+        return "/c claim";
     }
 }

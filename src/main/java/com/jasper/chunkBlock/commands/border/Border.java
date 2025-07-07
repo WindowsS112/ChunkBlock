@@ -16,11 +16,6 @@ public class Border {
         this.radius = radius;
     }
 
-    public boolean contains(Location location) {
-        return location.getWorld().equals(center.getWorld()) &&
-                location.distance(center) <= radius;
-    }
-
     public void expand(int amount) {
         this.radius += amount;
     }
@@ -54,7 +49,5 @@ public class Border {
     public int getMaxZ() {
         return center.getBlockZ() + radius;
     }
-
-    // Je kunt ook nog serialize / deserialize methods maken voor de config
 }
 

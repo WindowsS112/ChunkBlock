@@ -1,11 +1,13 @@
 package com.jasper.chunkBlock;
 
 import com.jasper.chunkBlock.commands.CommandManager;
+import com.jasper.chunkBlock.listeners.MenuListener;
 import com.jasper.chunkBlock.listeners.PlayerJoinListener;
 import com.jasper.chunkBlock.util.BorderStorage;
 import com.jasper.chunkBlock.util.Team;
 import com.jasper.chunkBlock.util.TeamStorage;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -19,6 +21,7 @@ public final class ChunkBlock extends JavaPlugin {
 
     private BorderStorage borderStorage;
     private TeamStorage teamStorage;
+    private Chunk chunk;
 
     private File configFile = new File(getDataFolder(), "config.yml");
     private File borderData = new File(getDataFolder(), "borders.yml");
@@ -49,10 +52,11 @@ public final class ChunkBlock extends JavaPlugin {
         this.teamStorage = new TeamStorage(teamsData, this, teamsFile);
         this.teamStorage.loadTeams();
 
-        this.borderStorage = new BorderStorage(borderData, this, modifyFile);
+        this.borderStorage = new BorderStorage(borderData, this, modifyFile,teamStorage);
 
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(borderStorage, this,teamStorage), this);
-        getCommand("c").setExecutor(new CommandManager(borderStorage, cSize, borderData,this, teamStorage, team));
+        getServer().getPluginManager().registerEvents(new MenuListener(), this);
+        getCommand("c").setExecutor(new CommandManager(borderStorage, cSize, borderData,this, teamStorage, team,chunk));
 
         Bukkit.getLogger().info("[ChunkBlock] -> Has Been Started!");
     }
@@ -60,11 +64,9 @@ public final class ChunkBlock extends JavaPlugin {
     public BorderStorage getBorderStorage() {
         return this.borderStorage;
     }
-
     public FileConfiguration getCustomConfig() {
         return config;
     }
-
     public TeamStorage getTeamStorage() {
         return this.teamStorage;
     }

@@ -40,15 +40,15 @@ public class JoinTeamCommand extends SubCommand {
         if (args.length > 1) {
             String teamName = args[1];
             Team team = teamStorage.getTeamByName(teamName);
-
-
-            if (!teamStorage.isPlayerInAnyTeam(player.getUniqueId())) {
-                if (teamStorage.checkTeamExist(team)) {
+            if (teamStorage.checkTeamExist(team)) {
+                if (!teamStorage.isPlayerInAnyTeam(player.getUniqueId())) {
                     teamStorage.addMemberToTeam(teamName, player.getUniqueId());
                     borderStorage.loadChunk(team);
+                } else {
+                    player.sendMessage(ChatColor.RED + "You are already in a team, leave that first");
                 }
             } else {
-                player.sendMessage(ChatColor.RED + "You are already in a team, leave that first");
+                player.sendMessage(ChatColor.RED + "Team does not exist!");
             }
         }
     }

@@ -21,58 +21,37 @@ public class ChunkSettingsGUI {
                 .pageSize(3)
                 .create();
 
-        // ### ITEMS ####
+        // Initialize PvP item
+        updatePvpItem(gui, team);
 
-        String name = "PVP " + (team.getBorder().isPvpAllowed() ? "§a[TRUE]" : "§c[FALSE]");
-        String lore = "Enables pvp in region";
-
-        GuiItem pvpAllowed;
-        pvpAllowed = ItemBuilder.from(Material.BOOK)
-                .setName("PVP " + (team.getBorder().isPvpAllowed() ? "§a[TRUE]" : "§c[FALSE]"))
-                .setLore("Enables pvp in region")
-                .asGuiItem(event -> {
-                    if (team.getBorder().isPvpAllowed()) {
-                        team.getBorder().setPvpAllowed(false);
-                    } else {
-                        team.getBorder().setPvpAllowed(true);
-                    }
-                });
-
-        gui.updateItem(1, ItemBuilder.from(Material.ENCHANTED_BOOK)
-                .setName(name)
-                .setLore(lore)
-                .asGuiItem(event -> {
-                    if (team.getBorder().isPvpAllowed()) {
-                        team.getBorder().setPvpAllowed(false);
-                    } else {
-                        team.getBorder().setPvpAllowed(true);
-                    }
-                })
-        );
-
-
-
-
-
-
-
-
-
-        // SETTING ITEMS
-//        gui.setItem(0, mobSpawning);
-        gui.setItem(1,pvpAllowed);
-
-        // NEXT OR PREVIOUS
+        // Previous & Next buttons
         gui.setItem(4, 3, ItemBuilder.from(Material.PAPER).setName("Previous").asGuiItem(event -> gui.previous()));
         gui.setItem(4, 7, ItemBuilder.from(Material.PAPER).setName("Next").asGuiItem(event -> gui.next()));
 
-        // FILLER
-        GuiItem filler = ItemBuilder.from(Material.GREEN_STAINED_GLASS_PANE).asGuiItem(inventoryClickEvent -> {
-        });
-        gui.setItem(27, filler);gui.setItem(28, filler);gui.setItem(30, filler);
-        gui.setItem(31, filler);gui.setItem(32, filler);gui.setItem(34, filler);
-        gui.setItem(35, filler);
+        // Filler items
+        GuiItem filler = ItemBuilder.from(Material.GREEN_STAINED_GLASS_PANE).asGuiItem();
+        for (int slot : new int[]{27, 28, 30, 31, 32, 34, 35}) {
+            gui.setItem(slot, filler);
+        }
 
         gui.open(player);
     }
+
+    private void updatePvpItem(PaginatedGui gui, Team team) {
+        String name = "PVP " + (team.getBorder().isPvpAllowed() ? "§a[TRUE]" : "§c[FALSE]");
+        String lore = "Enables pvp in region";
+
+        GuiItem pvpItem = ItemBuilder.from(Material.BOOK)
+                .setName(name)
+                .setLore(lore)
+                .asGuiItem(event -> {
+                    team.getBorder().setPvpAllowed(!team.getBorder().isPvpAllowed());
+                    updatePvpItem(gui, team); // Recursively update
+                });
+
+        gui.setItem(1, pvpItem);
+    }
+
+
 }
+

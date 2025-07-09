@@ -2,12 +2,13 @@ package com.jasper.chunkBlock.commands;
 
 import com.jasper.chunkBlock.ChunkBlock;
 import com.jasper.chunkBlock.commands.border.BorderBypassCommand;
+import com.jasper.chunkBlock.commands.chunk.ChunkSettingsCommand;
 import com.jasper.chunkBlock.commands.chunk.ClaimCommand;
 import com.jasper.chunkBlock.commands.chunk.ChunkHomeCommand;
 import com.jasper.chunkBlock.commands.chunk.ChunkSetHomeCommand;
 import com.jasper.chunkBlock.commands.team.*;
-import com.jasper.chunkBlock.commands.util.ChunkGUI;
 import com.jasper.chunkBlock.commands.util.HulpCommand;
+import com.jasper.chunkBlock.gui.BaseGui;
 import com.jasper.chunkBlock.util.BorderStorage;
 import com.jasper.chunkBlock.util.Team;
 import com.jasper.chunkBlock.util.TeamStorage;
@@ -17,7 +18,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ public class CommandManager implements CommandExecutor {
     private File borderData;
     private ChunkBlock plugin;
 
-    public CommandManager(BorderStorage borderStorage, double cSize, File borderData, ChunkBlock plugin, TeamStorage teamStorage, Team team, Chunk chunk) {
+    public CommandManager(BorderStorage borderStorage, double cSize, File borderData, ChunkBlock plugin, TeamStorage teamStorage, Team team) {
         this.borderStorage = borderStorage;
         this.cSize = cSize;
         this.borderData = borderData;
@@ -45,7 +45,7 @@ public class CommandManager implements CommandExecutor {
         subcommands.add(new ClaimCommand("","","",team,teamStorage, plugin,borderStorage));
         subcommands.add(new ChunkHomeCommand("","","",team, borderStorage, teamStorage));
         subcommands.add(new ChunkSetHomeCommand("","","",team,borderStorage, teamStorage));
-        subcommands.add(new ChunkGUI("","","",teamStorage));
+        subcommands.add(new ChunkSettingsCommand("","",""));
     }
 
     @Override

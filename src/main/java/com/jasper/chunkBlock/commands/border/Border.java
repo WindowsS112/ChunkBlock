@@ -10,6 +10,8 @@ public class Border {
 
     private Location center;
     private int radius;
+    private boolean pvpAllowed = true;
+    private boolean allowMobSpawning = true;
 
     public Border(Location center, int radius) {
         this.center = center;
@@ -29,6 +31,15 @@ public class Border {
         worldBorder.setCenter(center);
         worldBorder.setSize(radius);
         return worldBorder;
+    }
+
+    public boolean setPvpAllowed(boolean pvpAllowed) {
+        this.pvpAllowed = pvpAllowed;
+        pvpAllowed = false;
+        return pvpAllowed;
+    }
+    public boolean isPvpAllowed() {
+        return pvpAllowed;
     }
 
     public Location getCenter() { return center; }

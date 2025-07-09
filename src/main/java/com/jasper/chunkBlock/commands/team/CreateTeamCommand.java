@@ -52,7 +52,9 @@ public class CreateTeamCommand extends SubCommand {
 
             if (!teamStorage.isPlayerInAnyTeam(player.getUniqueId())) {
                 Team team = new Team(player.getUniqueId().toString(),player.getUniqueId(),teamName);
+                team.setHome(player.getLocation());
                 teamStorage.addTeam(team);
+
                 player.sendMessage(ChatColor.GREEN + "Succesfully created: " + team.getTeamName() + "!");
             } else {
                 player.sendMessage(ChatColor.RED + "You are already in a chunkparty, leave this one first!");

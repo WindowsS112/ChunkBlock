@@ -45,7 +45,7 @@ public class CommandManager implements CommandExecutor {
         subcommands.add(new ClaimCommand("","","",team,teamStorage, plugin,borderStorage));
         subcommands.add(new ChunkHomeCommand("","","",team, borderStorage, teamStorage));
         subcommands.add(new ChunkSetHomeCommand("","","",team,borderStorage, teamStorage));
-        subcommands.add(new ChunkSettingsCommand("","",""));
+        subcommands.add(new ChunkSettingsCommand("","","",team,teamStorage));
     }
 
     @Override

@@ -5,6 +5,7 @@ api-version: 1.20
 authors: [Jasper]
 description: A ChunkBlock plugin
 softdepend: [WorldBorderAPI]
+depend: [WorldGuard]
 commands:
   c:
     description: Main command for the ChunkBlock plugin

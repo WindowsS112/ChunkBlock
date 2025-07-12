@@ -9,8 +9,12 @@ import org.bukkit.entity.Player;
 
 public class ChunkSettingsCommand extends SubCommand {
 
+
+    private ChunkSettingsGUI chunkSettingsGUI;
     private Team team;
     private TeamStorage teamStorage;
+
+
     public ChunkSettingsCommand(String name, String description, String syntax, Team team, TeamStorage teamStorage) {
         super(name, description, syntax);
         this.team = team;
@@ -21,7 +25,8 @@ public class ChunkSettingsCommand extends SubCommand {
     public void perform(Player player, String[] args) {
         if (teamStorage.isPlayerInAnyTeam(player.getUniqueId())) {
             Team team1 = teamStorage.getTeamFromPlayer(player.getUniqueId());
-            new ChunkSettingsGUI().open(player, team1);
+            this.chunkSettingsGUI = new ChunkSettingsGUI(player, team1);
+            this.chunkSettingsGUI.open();
         } else {
             player.sendMessage("You are not in a team");
         }

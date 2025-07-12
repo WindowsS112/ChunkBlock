@@ -42,7 +42,7 @@ public class BorderBypassCommand extends SubCommand {
             player.sendMessage("§aBypass activated.");
             System.out.println("Bypass activated.");
         } else {
-//            borderStorage.loadChunk(player);
+//            borderStorage.loadBorder(player);
             player.sendMessage("§cBypass deactivated.");
             System.out.println("Bypass deactivated.");
         }

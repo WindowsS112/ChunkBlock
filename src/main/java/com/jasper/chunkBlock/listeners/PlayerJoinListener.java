@@ -4,7 +4,6 @@ import com.jasper.chunkBlock.ChunkBlock;
 import com.jasper.chunkBlock.util.BorderStorage;
 import com.jasper.chunkBlock.util.Team;
 import com.jasper.chunkBlock.util.TeamStorage;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -34,7 +33,7 @@ public class PlayerJoinListener implements Listener {
             public void onPlayerMove(PlayerMoveEvent moveEvent) {
                 if (teamStorage.isPlayerInAnyTeam(player.getUniqueId())) {
                     if (moveEvent.getPlayer().equals(player)) {
-                        borderStorage.loadChunk(team);
+                        borderStorage.loadBorder(team);
 
                         HandlerList.unregisterAll(this);
                     }

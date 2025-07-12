@@ -2,6 +2,7 @@ package com.jasper.chunkBlock.commands.team;
 
 import com.jasper.chunkBlock.commands.SubCommand;
 import com.jasper.chunkBlock.util.Team;
+import com.jasper.chunkBlock.util.TeamManager;
 import com.jasper.chunkBlock.util.TeamStorage;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -13,12 +14,14 @@ public class CreateTeamCommand extends SubCommand {
     private final JavaPlugin plugin;
     private final TeamStorage teamStorage;
     private String owner;
+    private TeamManager teamManager;
 
-    public CreateTeamCommand(String name, String description, String syntax, JavaPlugin plugin, String teamName, TeamStorage teamStorage) {
+    public CreateTeamCommand(String name, String description, String syntax, JavaPlugin plugin, String teamName, TeamStorage teamStorage, TeamManager teamManager) {
         super(name, description, syntax);
         this.plugin = plugin;
         this.teamName = teamName;
         this.teamStorage = teamStorage;
+        this.teamManager = teamManager;
     }
 
     @Override
@@ -51,10 +54,7 @@ public class CreateTeamCommand extends SubCommand {
             owner = player.getUniqueId().toString();
 
             if (!teamStorage.isPlayerInAnyTeam(player.getUniqueId())) {
-                Team team = new Team(player.getUniqueId().toString(),player.getUniqueId(),teamName);
-                team.setHome(player.getLocation());
-                teamStorage.addTeam(team);
-
+                Team team = teamManager.createTeam(teamName, player);
                 player.sendMessage(ChatColor.GREEN + "Succesfully created: " + team.getTeamName() + "!");
             } else {
                 player.sendMessage(ChatColor.RED + "You are already in a chunkparty, leave this one first!");

@@ -6,6 +6,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -169,6 +170,21 @@ public class TeamStorage {
             }
         }
         return null;
+    }
+
+    /**
+     * Haal een team op (case‑insensitive) uit de in‑memory map.
+     * @param name De teamnaam
+     * @return Optional met Team of empty als hij niet bestaat
+     */
+    public Optional<Team> getTeam(String name) {
+        if (name == null) return Optional.empty();
+        return Optional.ofNullable(teams.get(name.toLowerCase()));
+    }
+
+
+    public JavaPlugin getPlugin() {
+        return plugin;
     }
 
 

@@ -6,8 +6,6 @@ import com.jasper.chunkBlock.util.TeamStorage;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.UUID;
-
 public class LeaveTeamCommand extends SubCommand {
 
     private Team team;

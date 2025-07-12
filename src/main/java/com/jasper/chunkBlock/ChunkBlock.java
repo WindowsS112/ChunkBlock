@@ -4,6 +4,7 @@ import com.jasper.chunkBlock.commands.CommandManager;
 import com.jasper.chunkBlock.listeners.PlayerJoinListener;
 import com.jasper.chunkBlock.util.BorderStorage;
 import com.jasper.chunkBlock.util.Team;
+import com.jasper.chunkBlock.util.TeamManager;
 import com.jasper.chunkBlock.util.TeamStorage;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -21,6 +22,8 @@ public final class ChunkBlock extends JavaPlugin {
     private BorderStorage borderStorage;
     private TeamStorage teamStorage;
     private Chunk chunk;
+    private static ChunkBlock instance;
+
 
     private File configFile = new File(getDataFolder(), "config.yml");
     private File borderData = new File(getDataFolder(), "borders.yml");
@@ -34,6 +37,7 @@ public final class ChunkBlock extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        instance = this;
 
         if (!configFile.exists()) saveDefaultConfig();
         config = YamlConfiguration.loadConfiguration(configFile);
@@ -53,12 +57,23 @@ public final class ChunkBlock extends JavaPlugin {
 
         this.borderStorage = new BorderStorage(borderData, this, modifyFile,teamStorage);
 
+        TeamManager teamManager = new TeamManager(teamStorage,borderStorage);
+
+        teamStorage.loadTeams();
+        borderStorage.loadAllBorders();
+
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(borderStorage, this,teamStorage), this);
-        getCommand("c").setExecutor(new CommandManager(borderStorage, cSize, borderData,this, teamStorage, team));
+        getCommand("c").setExecutor(new CommandManager(borderStorage, cSize, borderData,this, teamStorage, team,teamManager));
 
         Bukkit.getLogger().info("[ChunkBlock] -> Has Been Started!");
     }
 
+    public void onDisable(){
+        instance = null;
+    }
+    public static ChunkBlock getInstance() {
+        return instance;
+    }
     public BorderStorage getBorderStorage() {
         return this.borderStorage;
     }

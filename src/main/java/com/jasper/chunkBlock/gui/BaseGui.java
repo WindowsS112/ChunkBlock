@@ -1,39 +1,33 @@
 package com.jasper.chunkBlock.gui;
 
-import dev.triumphteam.gui.builder.item.ItemBuilder;
-import dev.triumphteam.gui.guis.Gui;
-import dev.triumphteam.gui.guis.GuiItem;
+import com.github.stefvanschie.inventoryframework.gui.GuiItem;
+import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import net.kyori.adventure.text.Component;
+import org.bukkit.inventory.ItemStack;
 
-import java.util.function.Consumer;
+import java.util.Arrays;
 
-public class BaseGui {
+public abstract class BaseGui {
 
-    private final Gui gui;
+    protected final Player player;
+    protected final ChestGui gui;
 
-    public BaseGui(String title, int rows) {
-        this.gui = Gui.gui()
-                .title(Component.text(title))
-                .rows(rows)
-                .create();
+    public BaseGui(Player player, String title, int rows) {
+        this.player = player;
+        this.gui = new ChestGui(rows, title);
+        this.gui.setOnGlobalClick(event -> event.setCancelled(true)); // voorkomt slepen
     }
 
-    public BaseGui addItem(int slot, @NotNull Material material, @NotNull String name, @NotNull Consumer<Player> clickAction) {
-        GuiItem item = ItemBuilder.from(material)
-                .name(Component.text(name))
-                .asGuiItem(event -> {
-                    Player player = (Player) event.getWhoClicked();
-                    clickAction.accept(player);
-                });
+    public abstract void build();
 
-        gui.setItem(slot, item);
-        return this;
-    }
-
-    public Gui build() {
-        return gui;
+    public void open() {
+        this.build();
+        GuiItem filler = new GuiItem(new ItemStack(Material.GRAY_STAINED_GLASS_PANE)); // of via utility
+        GuiItem[] pane = new GuiItem[gui.getRows() * 9];
+        Arrays.fill(pane, filler);
+//        gui.getFiller().fill(pane); // optioneel: alleen randjes vullen
+        gui.show(player);
     }
 }
+

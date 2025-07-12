@@ -3,17 +3,15 @@ package com.jasper.chunkBlock.commands;
 import com.jasper.chunkBlock.ChunkBlock;
 import com.jasper.chunkBlock.commands.border.BorderBypassCommand;
 import com.jasper.chunkBlock.commands.chunk.ChunkSettingsCommand;
-import com.jasper.chunkBlock.commands.chunk.ClaimCommand;
 import com.jasper.chunkBlock.commands.chunk.ChunkHomeCommand;
 import com.jasper.chunkBlock.commands.chunk.ChunkSetHomeCommand;
 import com.jasper.chunkBlock.commands.team.*;
 import com.jasper.chunkBlock.commands.util.HulpCommand;
-import com.jasper.chunkBlock.gui.BaseGui;
 import com.jasper.chunkBlock.util.BorderStorage;
 import com.jasper.chunkBlock.util.Team;
+import com.jasper.chunkBlock.util.TeamManager;
 import com.jasper.chunkBlock.util.TeamStorage;
 import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -29,20 +27,21 @@ public class CommandManager implements CommandExecutor {
     private double cSize;
     private File borderData;
     private ChunkBlock plugin;
+    private TeamManager teamManager;
 
-    public CommandManager(BorderStorage borderStorage, double cSize, File borderData, ChunkBlock plugin, TeamStorage teamStorage, Team team) {
+    public CommandManager(BorderStorage borderStorage, double cSize, File borderData, ChunkBlock plugin, TeamStorage teamStorage, Team team,TeamManager teamManager) {
         this.borderStorage = borderStorage;
         this.cSize = cSize;
         this.borderData = borderData;
         this.plugin = plugin;
+        this.teamManager = teamManager;
         subcommands.add(new BorderBypassCommand("", "", "", this.borderStorage));
         subcommands.add(new HulpCommand("", "", "", this));
-        subcommands.add(new CreateTeamCommand("", "", "",plugin,"",teamStorage));
+        subcommands.add(new CreateTeamCommand("", "", "",plugin,"",teamStorage,teamManager));
         subcommands.add(new RemoveTeamCommand("", "", "", "", team, teamStorage));
         subcommands.add(new LeaveTeamCommand("","","",team, teamStorage));
         subcommands.add(new JoinTeamCommand("","","",team,teamStorage,borderStorage));
         subcommands.add(new DisbandTeamCommand("","","",team,teamStorage,borderStorage));
-        subcommands.add(new ClaimCommand("","","",team,teamStorage, plugin,borderStorage));
         subcommands.add(new ChunkHomeCommand("","","",team, borderStorage, teamStorage));
         subcommands.add(new ChunkSetHomeCommand("","","",team,borderStorage, teamStorage));
         subcommands.add(new ChunkSettingsCommand("","","",team,teamStorage));

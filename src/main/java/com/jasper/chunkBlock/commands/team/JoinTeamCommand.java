@@ -43,7 +43,7 @@ public class JoinTeamCommand extends SubCommand {
             if (teamStorage.checkTeamExist(team)) {
                 if (!teamStorage.isPlayerInAnyTeam(player.getUniqueId())) {
                     teamStorage.addMemberToTeam(teamName, player.getUniqueId());
-                    borderStorage.loadChunk(team);
+                    borderStorage.loadBorder(team);
                 } else {
                     player.sendMessage(ChatColor.RED + "You are already in a team, leave that first");
                 }

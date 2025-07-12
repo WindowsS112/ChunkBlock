@@ -1,57 +1,57 @@
 package com.jasper.chunkBlock.gui.chunk;
 
+import com.github.stefvanschie.inventoryframework.gui.GuiItem;
+import com.jasper.chunkBlock.util.Border;
 import com.jasper.chunkBlock.util.Team;
-import dev.triumphteam.gui.builder.item.ItemBuilder;
-import dev.triumphteam.gui.guis.Gui;
-import dev.triumphteam.gui.guis.GuiItem;
-import dev.triumphteam.gui.guis.PaginatedGui;
-import net.kyori.adventure.text.Component;
-import org.bukkit.Location;
+import com.jasper.chunkBlock.ChunkBlock;
+import com.jasper.chunkBlock.gui.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
+import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import org.bukkit.inventory.ItemStack;
 
 public class ChunkSettingsGUI {
 
-    public void open(Player player, Team team) {
-        PaginatedGui gui = Gui.paginated()
-                .title(Component.text("Chunk Settings"))
-                .rows(4)
-                .disableAllInteractions()
-                .pageSize(3)
-                .create();
+    private final Player player;
+    private final Team team;
+    private final Border border;
 
-        // Initialize PvP item
-        updatePvpItem(gui, team);
+    public ChunkSettingsGUI(Player player, Team team) {
+        this.player = player;
+        this.team = team;
 
-        // Previous & Next buttons
-        gui.setItem(4, 3, ItemBuilder.from(Material.PAPER).setName("Previous").asGuiItem(event -> gui.previous()));
-        gui.setItem(4, 7, ItemBuilder.from(Material.PAPER).setName("Next").asGuiItem(event -> gui.next()));
+        this.border = ChunkBlock.getInstance().getBorderStorage().getBorder(team);
+        if (this.border == null) {
+            throw new IllegalStateException("Border niet gevonden voor team: " + team.getTeamName());
+        }
+    }
 
-        // Filler items
-        GuiItem filler = ItemBuilder.from(Material.GREEN_STAINED_GLASS_PANE).asGuiItem();
-        for (int slot : new int[]{27, 28, 30, 31, 32, 34, 35}) {
-            gui.setItem(slot, filler);
+    public void open() {
+        ChestGui gui = new ChestGui(3, "Chunk Settings");
+        StaticPane pane = new StaticPane(0, 0, 9, 3);
+
+        if (border == null) {
+            ItemStack noBorderItem = new ItemBuilder(Material.BARRIER)
+                    .setName("§cGeen border gevonden")
+                    .setLore("§7Claim eerst een chunk voor dit team.")
+                    .build();
+            pane.addItem(new GuiItem(noBorderItem), 4, 1);
+        } else {
+            boolean pvp = border.isAllowPvP();
+
+            ItemStack pvpItem = new ItemBuilder(Material.BOOK)
+                    .setName("§bPvP")
+                    .setLore("§7PvP is: " + (pvp ? "§aEnabled" : "§cDisabled"))
+                    .build();
+
+            pane.addItem(new GuiItem(pvpItem, event -> {
+                border.setAllowPvP(!pvp);
+                new ChunkSettingsGUI(player, team).open(); // Refresh GUI
+            }), 3, 1);
         }
 
-        gui.open(player);
+        gui.addPane(pane);
+        gui.show(player);
     }
-
-    private void updatePvpItem(PaginatedGui gui, Team team) {
-        String name = "PVP " + (team.getBorder().isPvpAllowed() ? "§a[TRUE]" : "§c[FALSE]");
-        String lore = "Enables pvp in region";
-
-        GuiItem pvpItem = ItemBuilder.from(Material.BOOK)
-                .setName(name)
-                .setLore(lore)
-                .asGuiItem(event -> {
-                    team.getBorder().setPvpAllowed(!team.getBorder().isPvpAllowed());
-                    updatePvpItem(gui, team); // Recursively update
-                });
-
-        gui.setItem(1, pvpItem);
-    }
-
-
 }
-

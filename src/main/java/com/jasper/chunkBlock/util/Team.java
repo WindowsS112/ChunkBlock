@@ -17,7 +17,6 @@ public class Team {
     private String teamName;
     private Set<UUID> members = new HashSet<>();
     private UUID owner;
-    private final Set<Chunk> ownedChunks = new HashSet<>();
     private Location home;
 
     public Team(String id, UUID owner, String teamName) {
@@ -83,13 +82,6 @@ public class Team {
         }
     }
 
-    public void setHome(Location location) {
-        this.home = location;
-    }
-
-    public Location getHome() {
-        return home;
-    }
 
     public String getTeamName() { return teamName; }
 

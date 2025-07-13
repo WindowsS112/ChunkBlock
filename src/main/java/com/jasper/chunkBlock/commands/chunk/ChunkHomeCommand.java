@@ -39,7 +39,7 @@ public class ChunkHomeCommand extends SubCommand {
     public void perform(Player player, String[] args) {
         Team playerTeam = teamStorage.getTeamFromPlayer(player.getUniqueId());
         if (teamStorage.checkTeamExist(playerTeam)) {
-            Location home = playerTeam.getHome();
+            Location home = borderStorage.getHomeLocation(playerTeam);
             if (home != null) {
                 player.teleport(home);
             } else {

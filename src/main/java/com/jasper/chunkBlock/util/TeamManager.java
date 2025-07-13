@@ -1,15 +1,9 @@
 package com.jasper.chunkBlock.util;
 
-import com.jasper.chunkBlock.ChunkBlock;
-import com.jasper.chunkBlock.util.Border;
-import com.jasper.chunkBlock.util.BorderStorage;
-import com.jasper.chunkBlock.util.Team;
-import com.jasper.chunkBlock.util.TeamStorage;
-import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class TeamManager {
 
@@ -33,17 +27,10 @@ public class TeamManager {
         int x = owner.getLocation().getBlockX();
         int z = owner.getLocation().getBlockZ();
         String world = owner.getWorld().getName();
-
-        // 4. Bepaal de radius (bijv. uit config)
         double radius = teamStorage.getPlugin().getConfig().getDouble("defaultBorderRadius", 50.0);
 
-        // 5. Maak een Border voor deze chunk en sla het op
-        Border border = new Border(x, z, world, team, radius);
-        borderStorage.saveBorder(team, border);
-
-        // 6. Pas de border direct toe bij de owner
-        border.applyToTeam();
-
+        Location defaultHome = owner.getLocation();
+        borderStorage.createBorder(x,z,world,team,radius,defaultHome);
         return team;
     }
 

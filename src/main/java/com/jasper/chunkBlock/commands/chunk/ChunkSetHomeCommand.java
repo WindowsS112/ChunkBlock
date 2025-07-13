@@ -1,6 +1,7 @@
 package com.jasper.chunkBlock.commands.chunk;
 
 import com.jasper.chunkBlock.commands.SubCommand;
+import com.jasper.chunkBlock.util.Border;
 import com.jasper.chunkBlock.util.BorderStorage;
 import com.jasper.chunkBlock.util.Team;
 import com.jasper.chunkBlock.util.TeamStorage;
@@ -41,8 +42,9 @@ public class ChunkSetHomeCommand extends SubCommand {
     public void perform(Player player, String[] args) {
         Team playerTeam = teamStorage.getTeamFromPlayer(player.getUniqueId());
         if (teamStorage.checkTeamExist(playerTeam)) {
-            Location home = new Location(player.getWorld(), player.getX(), player.getY(), player.getZ());
-            playerTeam.setHome(home);
+            Location home = player.getLocation().clone();
+            Border border = borderStorage.getBorder(playerTeam);
+            border.setHome(home);
         } else {
             player.sendMessage("Team does not exist");
         }

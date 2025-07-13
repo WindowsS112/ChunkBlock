@@ -5,6 +5,7 @@ import com.jasper.chunkBlock.listeners.PlayerJoinListener;
 import com.jasper.chunkBlock.util.BorderStorage;
 import com.jasper.chunkBlock.util.Team;
 import com.jasper.chunkBlock.util.TeamManager;
+import com.jasper.chunkBlock.ChunkBlock;
 import com.jasper.chunkBlock.util.TeamStorage;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;

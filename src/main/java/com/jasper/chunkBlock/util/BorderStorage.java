@@ -1,9 +1,8 @@
 package com.jasper.chunkBlock.util;
 
 import com.jasper.chunkBlock.ChunkBlock;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.WorldBorder;
+import com.jasper.chunkBlock.gui.chunk.settings.SettingType;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -21,8 +20,7 @@ public class BorderStorage {
     private final YamlConfiguration borderstoragefile;
     private final TeamStorage teamStorage;
 
-    // Optioneel: cache alle borders in‑memory
-    private final Map<String, Border> bordersMap = new HashMap<>();
+    private final Map<Team, Border> bordersMap = new HashMap<>();
 
     public BorderStorage(File borderData,
                          ChunkBlock plugin,
@@ -34,21 +32,43 @@ public class BorderStorage {
         this.teamStorage = teamStorage;
     }
 
+    public void createBorder(int x, int z, String world, Team team, double radius, Location location) {
+        Border border = new Border(x, z, world, team, radius,location);
+        bordersMap.put(team, border); // <- DIT MOET JE TOEVOEGEN
+        saveBorder(team);
+        border.applyToTeam();
+        border.setHome(location);
+    }
+
     /**
      * Sla één border op onder Borders.<teamName>
      */
-    public void saveBorder(Team team, Border border) {
+    public void saveBorder(Team team) {
+        Border border = bordersMap.get(team);
+        if (border == null) return;
+
         String path = "Borders." + team.getTeamName();
+        String settingsPath = path + ".Settings";
 
         borderstoragefile.set(path + ".world", border.getWorldName());
         borderstoragefile.set(path + ".center.x", border.getX());
         borderstoragefile.set(path + ".center.z", border.getZ());
         borderstoragefile.set(path + ".radius", border.getRadius());
+        borderstoragefile.set(path + ".home.x", border.getDefaultHome().getX());
+        borderstoragefile.set(path + ".home.y", border.getDefaultHome().getY());
+        borderstoragefile.set(path + ".home.z", border.getDefaultHome().getZ());
+        borderstoragefile.set(path + ".home.yaw", border.getDefaultHome().getYaw());
+        borderstoragefile.set(path + ".home.pitch", border.getDefaultHome().getPitch());
+
+        for (SettingType type : SettingType.values()) {
+            boolean enabled = border.isSettingEnabled(type);
+            borderstoragefile.set(settingsPath + "." + type.getDisplayName(), border.isSettingEnabled(type));
+        }
 
         saveConfig();
 
         // Update cache
-        bordersMap.put(team.getTeamName(), border);
+        bordersMap.put(team, border);
     }
 
     /**
@@ -69,15 +89,33 @@ public class BorderStorage {
         int locz       = borderstoragefile.getInt(path + ".center.z");
         double radius  = borderstoragefile.getDouble(path + ".radius");
 
+        // Read home location
+        double homeX = borderstoragefile.getDouble(path + ".home.x");
+        double homeY = borderstoragefile.getDouble(path + ".home.y");
+        double homeZ = borderstoragefile.getDouble(path + ".home.z");
+        float homeYaw = (float) borderstoragefile.getDouble(path + ".home.yaw");
+        float homePitch = (float) borderstoragefile.getDouble(path + ".home.pitch");
         World world = Bukkit.getWorld(worldName);
+        Location defaultHome = new Location(world, homeX, homeY, homeZ, homeYaw, homePitch);
+
         if (world == null) {
             plugin.getLogger().warning("World not found: " + worldName);
             return false;
         }
 
         // Maak en cache de Border
-        Border border = new Border(locx, locz, worldName, team, radius);
-        bordersMap.put(teamName, border);
+
+
+        Border border = new Border(locx, locz, worldName, team, radius, defaultHome);
+        bordersMap.put(team, border);
+
+        ConfigurationSection settingsSection = borderstoragefile.getConfigurationSection(path + ".Settings");
+        if (settingsSection != null) {
+            for (SettingType type : SettingType.values()) {
+                boolean enabled = settingsSection.getBoolean(type.getDisplayName(), false);
+                border.setSetting(type, enabled);
+            }
+        }
 
         // Pas per‑player WorldBorder toe
         WorldBorder wb = Bukkit.createWorldBorder();
@@ -90,7 +128,6 @@ public class BorderStorage {
             Player player = Bukkit.getPlayer(uuid);
             if (player != null && player.isOnline()) {
                 player.setWorldBorder(wb);
-                player.sendMessage("§aBorder applied for team " + teamName);
             }
         }
         return true;
@@ -103,6 +140,7 @@ public class BorderStorage {
         if (!borderstoragefile.contains("Borders")) return;
 
         ConfigurationSection section = borderstoragefile.getConfigurationSection("Borders");
+
         for (String teamName : section.getKeys(false)) {
             // Haal team op
             Team team = teamStorage.getTeam(teamName).orElse(null);
@@ -114,9 +152,17 @@ public class BorderStorage {
             int z         = section.getInt(teamName + ".center.z");
             double radius = section.getDouble(teamName + ".radius");
 
+            // Home
+            double homeX = section.getDouble(teamName + ".home.x");
+            double homeY = section.getDouble(teamName + ".home.y");
+            double homeZ = section.getDouble(teamName + ".home.z");
+            float homeYaw = (float) section.getDouble(teamName + ".home.yaw");
+            float homePitch = (float) section.getDouble(teamName + ".home.pitch");
+            World world = Bukkit.getWorld(worldName);
+            Location defaultHome = new Location(world, homeX, homeY, homeZ, homeYaw, homePitch);
             // Maak en cache
-            Border border = new Border(x, z, worldName, team, radius);
-            bordersMap.put(teamName, border);
+            Border border = new Border(x, z, worldName, team, radius,defaultHome);
+            bordersMap.put(team, border);
         }
     }
 
@@ -130,7 +176,7 @@ public class BorderStorage {
         borderstoragefile.set(path, null);
         saveConfig();
 
-        bordersMap.remove(teamName);
+        bordersMap.remove(team);
 
         // Reset worldborder voor alle leden
         for (UUID uuid : team.getMembersOfTeam()) {
@@ -150,9 +196,12 @@ public class BorderStorage {
         }
     }
 
-
     public Border getBorder(Team team) {
-        return bordersMap.get(team.getTeamName());
+        return bordersMap.get(team);
+    }
+
+    public Location getHomeLocation(Team team) {
+        return getBorder(team).getDefaultHome();
     }
 
 }

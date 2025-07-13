@@ -1,41 +1,35 @@
 package com.jasper.chunkBlock.gui.chunk;
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
+import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
-import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
-import com.jasper.chunkBlock.gui.chunk.settings.SettingType;
+import com.jasper.chunkBlock.ChunkBlock;
 import com.jasper.chunkBlock.util.Border;
 import com.jasper.chunkBlock.util.Team;
-import com.jasper.chunkBlock.ChunkBlock;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
-import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.List;
+public class ChunkMainGUI {
 
-
-public class ChunkSettingsGUI {
-
-    private final Player player;
+    private Player player;
     private final Team team;
     private final Border border;
 
-    public ChunkSettingsGUI(Player player, Team team) {
+    public ChunkMainGUI(Player player, Team team) {
         this.player = player;
         this.team = team;
 
         this.border = ChunkBlock.getInstance().getBorderStorage().getBorder(team);
         if (this.border == null) {
-            throw new IllegalStateException("Border niet gevonden voor team: " + team.getTeamName());
+            throw new IllegalStateException("Border niet d voor team: " + team.getTeamName());
         }
     }
 
     public void open() {
-        ChestGui gui = new ChestGui(3, "Navigator");
+        ChestGui gui = new ChestGui(3, "Chunk d");
 
         gui.setOnGlobalClick(event -> event.setCancelled(true));
 
@@ -75,7 +69,6 @@ public class ChunkSettingsGUI {
         }));
 
         gui.addPane(navigationPane);
-
         gui.show(player);
     }
 }

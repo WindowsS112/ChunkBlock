@@ -1,6 +1,7 @@
 package com.jasper.chunkBlock.util;
 
 import com.jasper.chunkBlock.ChunkBlock;
+import com.jasper.chunkBlock.commands.team.Team;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
@@ -66,10 +67,11 @@ public class TeamStorage {
                     }
                 }
 
-                // maak team object aan, of roep setter aan, afhankelijk van jouw Team-class
-                Team team = new Team(ownerUUID.toString(), ownerUUID, teamName);
+                Team team = new Team(ownerUUID.toString(), ownerUUID, teamName,members);
                 for (UUID memberUUID : members) {
-                    team.joinTeam(memberUUID,this);
+                    if (!memberUUID.equals(ownerUUID)) {
+                        team.joinTeam(memberUUID, this);
+                    }
                 }
 
                 // voeg toe aan opslag
@@ -118,16 +120,11 @@ public class TeamStorage {
         player.sendMessage(ChatColor.GREEN + "Team " + team.getTeamName() + " succesfully deleted");
     }
 
-    public void addMemberToTeam(String teamName, UUID playerUUID) {
-        Team team = teams.get(teamName.toLowerCase());
-        if (team == null) {
-            System.out.println("Team not found: " + teamName);
-            return;
-        }
+    public void addMemberToTeam(Team team, UUID playerUUID) {
 
         team.joinTeam(playerUUID,this);
         List<String> memberUUIDs = team.getMembersAsStringList();
-        teamsstoragefile.set("Teams." + teamName + ".members", memberUUIDs);
+        teamsstoragefile.set("Teams." + team.getTeamName() + ".members", memberUUIDs);
         saveConfig();
 
         team.onJoin(Bukkit.getPlayer(playerUUID));

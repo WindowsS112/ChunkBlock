@@ -2,7 +2,6 @@ package com.jasper.chunkBlock.commands.team;
 
 import com.jasper.chunkBlock.commands.SubCommand;
 import com.jasper.chunkBlock.util.BorderStorage;
-import com.jasper.chunkBlock.util.Team;
 import com.jasper.chunkBlock.util.TeamStorage;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -42,14 +41,14 @@ public class JoinTeamCommand extends SubCommand {
             Team team = teamStorage.getTeamByName(teamName);
             if (teamStorage.checkTeamExist(team)) {
                 if (!teamStorage.isPlayerInAnyTeam(player.getUniqueId())) {
-                    teamStorage.addMemberToTeam(teamName, player.getUniqueId());
+                    teamStorage.addMemberToTeam(team, player.getUniqueId());
                     borderStorage.loadBorder(team);
                     player.teleport(borderStorage.getBorder(team).getDefaultHome());
                 } else {
-                    player.sendMessage(ChatColor.RED + "You are already in a team, leave that first");
+                    player.sendMessage(ChatColor.RED + "You are already in a team, leave " + teamName + " first");
                 }
             } else {
-                player.sendMessage(ChatColor.RED + "Team does not exist!");
+                player.sendMessage(ChatColor.RED + "Team " + args[1] +" does not exist!");
             }
         }
     }

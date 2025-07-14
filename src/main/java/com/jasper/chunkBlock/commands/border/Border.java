@@ -1,6 +1,7 @@
-package com.jasper.chunkBlock.util;
+package com.jasper.chunkBlock.commands.border;
 
 import com.jasper.chunkBlock.ChunkBlock;
+import com.jasper.chunkBlock.commands.team.Team;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;

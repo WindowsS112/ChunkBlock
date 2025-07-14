@@ -1,12 +1,10 @@
 package com.jasper.chunkBlock;
 
 import com.jasper.chunkBlock.commands.CommandManager;
-import com.jasper.chunkBlock.listeners.ChunkBorderListener;
 import com.jasper.chunkBlock.listeners.PlayerJoinListener;
 import com.jasper.chunkBlock.util.BorderStorage;
-import com.jasper.chunkBlock.util.Team;
+import com.jasper.chunkBlock.commands.team.Team;
 import com.jasper.chunkBlock.util.TeamManager;
-import com.jasper.chunkBlock.ChunkBlock;
 import com.jasper.chunkBlock.util.TeamStorage;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -65,7 +63,6 @@ public final class ChunkBlock extends JavaPlugin {
         borderStorage.loadAllBorders();
 
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(borderStorage, this,teamStorage), this);
-        getServer().getPluginManager().registerEvents(new ChunkBorderListener(this), this);
 
         getCommand("c").setExecutor(new CommandManager(borderStorage, cSize, borderData,this, teamStorage, team,teamManager));
 

@@ -4,32 +4,22 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
+import com.jasper.chunkBlock.commands.team.Team;
 import com.jasper.chunkBlock.gui.chunk.settings.SettingType;
-import com.jasper.chunkBlock.util.Border;
-import com.jasper.chunkBlock.util.Team;
+import com.jasper.chunkBlock.commands.border.Border;
 import com.jasper.chunkBlock.ChunkBlock;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import com.sk89q.worldguard.protection.regions.RegionContainer;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import com.sk89q.worldguard.protection.flags.StateFlag;
 import org.bukkit.entity.Player;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Arrays;
-import java.util.List;
-
-import static com.ibm.icu.impl.ValidIdentifiers.Datatype.region;
 
 
 public class ChunkSettingsGUI {
@@ -44,7 +34,7 @@ public class ChunkSettingsGUI {
 
         this.border = ChunkBlock.getInstance().getBorderStorage().getBorder(team);
         if (this.border == null) {
-            throw new IllegalStateException("Border niet gevonden voor team: " + team.getTeamName());
+            throw new IllegalStateException("Border not found: " + team.getTeamName());
         }
     }
 
@@ -88,8 +78,6 @@ public class ChunkSettingsGUI {
             }
 
         }
-
-
 
         pages.addPane(0, settingsPane); // Voeg settings toe aan pagina 0
         gui.addPane(pages);

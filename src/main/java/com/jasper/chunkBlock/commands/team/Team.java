@@ -1,9 +1,8 @@
-package com.jasper.chunkBlock.util;
+package com.jasper.chunkBlock.commands.team;
 
+import com.jasper.chunkBlock.util.TeamStorage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
@@ -17,11 +16,11 @@ public class Team {
     private String teamName;
     private Set<UUID> members = new HashSet<>();
     private UUID owner;
-    private Location home;
 
-    public Team(String id, UUID owner, String teamName) {
+    public Team(String id, UUID owner, String teamName, Set<UUID> members) {
         this.owner = owner;
         this.teamName = teamName;
+        this.members = new HashSet<>(members);
         this.members.add(owner);
     }
 

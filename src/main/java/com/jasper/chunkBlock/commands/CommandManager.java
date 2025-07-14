@@ -8,19 +8,16 @@ import com.jasper.chunkBlock.commands.chunk.ChunkHomeCommand;
 import com.jasper.chunkBlock.commands.chunk.ChunkSetHomeCommand;
 import com.jasper.chunkBlock.commands.team.*;
 import com.jasper.chunkBlock.commands.util.HulpCommand;
-import com.jasper.chunkBlock.gui.chunk.ChunkMainGUI;
 import com.jasper.chunkBlock.util.BorderStorage;
-import com.jasper.chunkBlock.util.Team;
+import com.jasper.chunkBlock.commands.team.Team;
 import com.jasper.chunkBlock.util.TeamManager;
 import com.jasper.chunkBlock.util.TeamStorage;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
 

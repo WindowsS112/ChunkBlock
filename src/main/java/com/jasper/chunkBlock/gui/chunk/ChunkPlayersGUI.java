@@ -4,9 +4,9 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
+import com.jasper.chunkBlock.commands.team.Team;
 import com.jasper.chunkBlock.gui.chunk.settings.SettingType;
-import com.jasper.chunkBlock.util.Border;
-import com.jasper.chunkBlock.util.Team;
+import com.jasper.chunkBlock.commands.border.Border;
 import com.jasper.chunkBlock.ChunkBlock;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -19,7 +19,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 

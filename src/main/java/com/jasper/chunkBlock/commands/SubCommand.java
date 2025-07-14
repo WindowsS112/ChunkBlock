@@ -7,6 +7,7 @@ public abstract class SubCommand {
     private String description;
     private String syntax;
 
+
     public SubCommand(String name, String description, String syntax) {
         this.name = name;
         this.description = description;

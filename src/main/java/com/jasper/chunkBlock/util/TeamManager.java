@@ -1,6 +1,6 @@
 package com.jasper.chunkBlock.util;
 
-import org.bukkit.Bukkit;
+import com.jasper.chunkBlock.commands.team.Team;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -10,6 +10,8 @@ public class TeamManager {
 
     private final TeamStorage teamStorage;
     private final BorderStorage borderStorage;
+    Set<UUID> members = new HashSet<>();
+
 
     public TeamManager(TeamStorage teamStorage, BorderStorage borderStorage) {
         this.teamStorage = teamStorage;
@@ -18,7 +20,7 @@ public class TeamManager {
 
     public Team createTeam(String name, Player owner) {
         // 1. Maak het Team-object en sla het op
-        Team team = new Team(name, owner.getUniqueId(), name);
+        Team team = new Team(name, owner.getUniqueId(), name, members);
         teamStorage.addTeam(team); // laadt in geheugen én schrijft weg in teams.yml
 
         // 2. Voeg de owner direct toe als member

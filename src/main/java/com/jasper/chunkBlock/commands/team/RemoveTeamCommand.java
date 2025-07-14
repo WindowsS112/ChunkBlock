@@ -1,7 +1,6 @@
 package com.jasper.chunkBlock.commands.team;
 
 import com.jasper.chunkBlock.commands.SubCommand;
-import com.jasper.chunkBlock.util.Team;
 import com.jasper.chunkBlock.util.TeamStorage;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

@@ -1,10 +1,12 @@
 package com.jasper.chunkBlock.commands.chunk;
 
 import com.jasper.chunkBlock.commands.SubCommand;
-import com.jasper.chunkBlock.util.Border;
+import com.jasper.chunkBlock.commands.border.Border;
 import com.jasper.chunkBlock.util.BorderStorage;
-import com.jasper.chunkBlock.util.Team;
+import com.jasper.chunkBlock.commands.team.Team;
+import com.jasper.chunkBlock.util.MessageUtils;
 import com.jasper.chunkBlock.util.TeamStorage;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -45,8 +47,9 @@ public class ChunkSetHomeCommand extends SubCommand {
             Location home = player.getLocation().clone();
             Border border = borderStorage.getBorder(playerTeam);
             border.setHome(home);
+            MessageUtils.sendSuccess(player,"Succesfully set new home");
         } else {
-            player.sendMessage("Team does not exist");
+            MessageUtils.sendError(player,"&cYou don't have a team");
         }
     }
 }

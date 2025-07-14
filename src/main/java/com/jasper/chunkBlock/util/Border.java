@@ -61,6 +61,15 @@ public class Border {
         return radius;
     }
 
+    public Location getCenter() {
+        World world = Bukkit.getWorld(worldName);
+        if (world == null) {
+            throw new IllegalStateException("Wereld niet gevonden: " + worldName);
+        }
+        return new Location(world, x + 0.5, 64, z + 0.5); // 0.5 = midden van blok
+    }
+
+
     public Map<SettingType, Boolean> getSettings() {
         return settings;
     }
@@ -79,9 +88,6 @@ public class Border {
     }
 
 
-
-
-
     //–– Setters ––//
     public void setAllowPvP(boolean allowPvP) {
         this.allowPvP = allowPvP;
@@ -90,8 +96,6 @@ public class Border {
     public void setAllowBuild(boolean allowBuild) {
         this.allowBuild = allowBuild;
     }
-
-    //–– Utility ––//
 
     /**
      * Unieke key voor opslag/lookup in je BorderStorage: "world:x,z"

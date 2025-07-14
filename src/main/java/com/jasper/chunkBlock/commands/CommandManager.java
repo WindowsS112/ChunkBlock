@@ -45,7 +45,7 @@ public class CommandManager implements CommandExecutor {
         subcommands.add(new HulpCommand("", "", "", this));
         subcommands.add(new CreateTeamCommand("", "", "",plugin,"",teamStorage,teamManager));
         subcommands.add(new RemoveTeamCommand("", "", "", "", team, teamStorage));
-        subcommands.add(new LeaveTeamCommand("","","",team, teamStorage));
+        subcommands.add(new LeaveTeamCommand("","","",team, teamStorage,borderStorage));
         subcommands.add(new JoinTeamCommand("","","",team,teamStorage,borderStorage));
         subcommands.add(new DisbandTeamCommand("","","",team,teamStorage,borderStorage));
         subcommands.add(new ChunkHomeCommand("","","",team, borderStorage, teamStorage));

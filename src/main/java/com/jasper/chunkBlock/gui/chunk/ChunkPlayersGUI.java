@@ -8,37 +8,29 @@ import com.jasper.chunkBlock.gui.chunk.settings.SettingType;
 import com.jasper.chunkBlock.util.Border;
 import com.jasper.chunkBlock.util.Team;
 import com.jasper.chunkBlock.ChunkBlock;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.flags.StateFlag;
-import com.sk89q.worldguard.protection.managers.RegionManager;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import com.sk89q.worldguard.protection.regions.RegionContainer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import com.sk89q.worldguard.protection.flags.StateFlag;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
-import static com.ibm.icu.impl.ValidIdentifiers.Datatype.region;
 
-
-public class ChunkSettingsGUI {
+public class ChunkPlayersGUI {
 
     private final Player player;
     private final Team team;
     private final Border border;
 
-    public ChunkSettingsGUI(Player player, Team team) {
+    public ChunkPlayersGUI(Player player, Team team) {
         this.player = player;
         this.team = team;
 
@@ -49,46 +41,29 @@ public class ChunkSettingsGUI {
     }
 
     public void open() {
-        ChestGui gui = new ChestGui(4, "Chunk - Settings");
+        ChestGui gui = new ChestGui(4, "Chunk - Players");
 
         PaginatedPane pages = new PaginatedPane(0, 0, 9, 3);
         OutlinePane settingsPane = new OutlinePane(0, 0, 9, 3);
 
-        RegionManager manager = WorldGuard.getInstance()
-                .getPlatform()
-                .getRegionContainer()
-                .get(BukkitAdapter.adapt(border.getCenter().getWorld()));
+        for (UUID memberUUID : team.getMembersOfTeam()) {
+            OfflinePlayer member = Bukkit.getOfflinePlayer(memberUUID);
 
-        if (manager == null) return;
+            ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
+            SkullMeta meta = (SkullMeta) skull.getItemMeta();
+            meta.setOwningPlayer(member);
+            meta.setDisplayName("§e" + member.getName());
+            meta.setLore(List.of("§7UUID: " + memberUUID.toString()));
+            skull.setItemMeta(meta);
 
-        String regionId = "team_" + border.getOwner().getTeamName(); // <-- HIER de juiste ID bepalen
-        ProtectedRegion region = manager.getRegion(regionId);
+            GuiItem guiItem = new GuiItem(skull, event -> {
+                event.setCancelled(true);
+                player.sendMessage("§7Je klikte op: §e" + member.getName());
+                // Voeg eventueel functionaliteit toe zoals "speler kicken" of "info bekijken"
+            });
 
-        if (region != null) {
-            for (SettingType setting : SettingType.values()) {
-                StateFlag flag = setting.getFlag();
-                if (flag == null) continue;
-
-                StateFlag.State state = region.getFlag(flag);
-                boolean enabled = (state == StateFlag.State.ALLOW);
-
-                GuiItem guiItem = getGuiItem(setting, enabled);
-
-                GuiItem clickableItem = new GuiItem(guiItem.getItem(), event -> {
-                    event.setCancelled(true);
-
-                    boolean newEnabled = !enabled;
-                    region.setFlag(flag, newEnabled ? StateFlag.State.ALLOW : StateFlag.State.DENY);
-
-                    manager.addRegion(region);
-                    gui.update();
-                });
-
-                settingsPane.addItem(clickableItem);
-            }
-
+            settingsPane.addItem(guiItem);
         }
-
 
 
         pages.addPane(0, settingsPane); // Voeg settings toe aan pagina 0
@@ -129,6 +104,7 @@ public class ChunkSettingsGUI {
         }), 4, 0);
 
         gui.addPane(navigation);
+
         gui.show(player);
     }
 

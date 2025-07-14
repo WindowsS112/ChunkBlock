@@ -29,43 +29,54 @@ public class ChunkMainGUI {
     }
 
     public void open() {
-        ChestGui gui = new ChestGui(3, "Chunk d");
+        ChestGui gui = new ChestGui(4, "Chunk - Menu");
 
         gui.setOnGlobalClick(event -> event.setCancelled(true));
 
-        OutlinePane background = new OutlinePane(0, 0, 9, 3, Pane.Priority.LOWEST);
+        OutlinePane background = new OutlinePane(0, 0, 9, 4, Pane.Priority.LOWEST);
         background.addItem(new GuiItem(new ItemStack(Material.BLACK_STAINED_GLASS_PANE)));
         background.setRepeat(true);
 
         gui.addPane(background);
 
-        OutlinePane navigationPane = new OutlinePane(3, 1, 3, 1);
+        OutlinePane navigationPane = new OutlinePane(1, 1, 3, 2);
 
-        ItemStack shop = new ItemStack(Material.CHEST);
+        ItemStack shop = new ItemStack(Material.OAK_DOOR);
         ItemMeta shopMeta = shop.getItemMeta();
-        shopMeta.setDisplayName("Shop");
+        shopMeta.setDisplayName("Chunk - Home");
         shop.setItemMeta(shopMeta);
 
         navigationPane.addItem(new GuiItem(shop, event -> {
-            //navigate to the shop
+            player.teleport(border.getDefaultHome());
         }));
 
-        ItemStack beacon = new ItemStack(Material.BEACON);
+        ItemStack beacon = new ItemStack(Material.BOOK);
         ItemMeta beaconMeta = beacon.getItemMeta();
-        beaconMeta.setDisplayName("Spawn");
+        beaconMeta.setDisplayName("Chunk - Settings");
         beacon.setItemMeta(beaconMeta);
 
         navigationPane.addItem(new GuiItem(beacon, event -> {
-            //navigate to spawn
+            ChunkSettingsGUI ch = new ChunkSettingsGUI(player, team);
+            ch.open();
         }));
 
         ItemStack bed = new ItemStack(Material.RED_BED);
         ItemMeta bedMeta = bed.getItemMeta();
-        bedMeta.setDisplayName("Home");
+        bedMeta.setDisplayName("Chunk - Home");
         bed.setItemMeta(bedMeta);
 
         navigationPane.addItem(new GuiItem(bed, event -> {
             //navigate to home
+        }));
+
+        ItemStack players = new ItemStack(Material.ACACIA_LEAVES);
+        ItemMeta  playerMeta = players.getItemMeta();
+        playerMeta.setDisplayName("Chunk - Players");
+        players.setItemMeta(playerMeta);
+
+        navigationPane.addItem(new GuiItem(players, event -> {
+            ChunkPlayersGUI chunkPlayersGUI = new ChunkPlayersGUI(player,team);
+            chunkPlayersGUI.open();
         }));
 
         gui.addPane(navigationPane);

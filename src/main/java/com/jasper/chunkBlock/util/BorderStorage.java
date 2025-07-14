@@ -38,6 +38,7 @@ public class BorderStorage {
         saveBorder(team);
         border.applyToTeam();
         border.setHome(location);
+        RegionSynchronizer.syncRegionFromBorder(team, border);
     }
 
     /**
@@ -64,7 +65,6 @@ public class BorderStorage {
             boolean enabled = border.isSettingEnabled(type);
             borderstoragefile.set(settingsPath + "." + type.getDisplayName(), border.isSettingEnabled(type));
         }
-
         saveConfig();
 
         // Update cache
@@ -130,6 +130,8 @@ public class BorderStorage {
                 player.setWorldBorder(wb);
             }
         }
+        RegionSynchronizer.syncRegionFromBorder(team, border);
+
         return true;
     }
 
@@ -184,6 +186,13 @@ public class BorderStorage {
             if (player != null && player.isOnline()) {
                 player.setWorldBorder(null);
             }
+        }
+    }
+
+    public void removeBorder(Player player) {
+        UUID uuid = player.getUniqueId();
+        if (player != null && player.isOnline()) {
+            player.setWorldBorder(null);
         }
     }
 

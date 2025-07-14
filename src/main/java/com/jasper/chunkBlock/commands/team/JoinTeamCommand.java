@@ -44,6 +44,7 @@ public class JoinTeamCommand extends SubCommand {
                 if (!teamStorage.isPlayerInAnyTeam(player.getUniqueId())) {
                     teamStorage.addMemberToTeam(teamName, player.getUniqueId());
                     borderStorage.loadBorder(team);
+                    player.teleport(borderStorage.getBorder(team).getDefaultHome());
                 } else {
                     player.sendMessage(ChatColor.RED + "You are already in a team, leave that first");
                 }

@@ -61,8 +61,8 @@ public class CommandManager implements CommandExecutor {
         if (label.equalsIgnoreCase("c")) {
             if (args.length == 0) {
                 if (teamStorage.isPlayerInAnyTeam(p.getUniqueId())) {
-                    ChunkMainCommand c = new ChunkMainCommand(teamStorage);
-                    c.open(p, teamStorage);
+                    ChunkMainCommand c = new ChunkMainCommand(teamManager);
+                    c.open(p, teamManager);
                 } else {
                     showHelp(p);
                 }

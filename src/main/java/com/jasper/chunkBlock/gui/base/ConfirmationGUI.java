@@ -1,32 +1,55 @@
 package com.jasper.chunkBlock.gui.base;
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
-import com.github.stefvanschie.inventoryframework.gui.type.HopperGui;
+import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
-import com.jasper.chunkBlock.ChunkBlock;
-import com.jasper.chunkBlock.commands.border.Border;
-import com.jasper.chunkBlock.commands.team.Team;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public abstract class ConfirmationGUI {
 
     private final Player player;
-    private final Team team;
+    private final String title;
 
-    public ConfirmationGUI(Player player, Team team) {
+    public ConfirmationGUI(Player player, String title) {
         this.player = player;
-        this.team = team;
+        this.title = title;
     }
 
     public void open() {
-        HopperGui hopperGui = new HopperGui("My hopper");
+        ChestGui gui = new ChestGui(3, title);
+        StaticPane pane = new StaticPane(0, 1, 9, 1);
 
-        StaticPane pane = new StaticPane(0, 0, 9, 0);
-        pane.addItem(new GuiItem(new ItemStack(Material.RED_WOOL)), 0, 0);
-        pane.addItem(new GuiItem(new ItemStack(Material.GREEN_WOOL)), 4, 0);
+        // YES button (green)
+        ItemStack yesItem = new ItemStack(Material.LIME_CONCRETE);
+        ItemMeta yesMeta = yesItem.getItemMeta();
+        yesMeta.setDisplayName("§aYes");
+        yesItem.setItemMeta(yesMeta);
 
-        hopperGui.show(player);
+        pane.addItem(new GuiItem(yesItem, event -> {
+            event.setCancelled(true);
+            player.closeInventory();
+            onConfirm();
+        }), 2, 0);
+
+        // NO button (red)
+        ItemStack noItem = new ItemStack(Material.RED_CONCRETE);
+        ItemMeta noMeta = noItem.getItemMeta();
+        noMeta.setDisplayName("§cNo");
+        noItem.setItemMeta(noMeta);
+
+        pane.addItem(new GuiItem(noItem, event -> {
+            event.setCancelled(true);
+            player.closeInventory();
+            onDeny();
+        }), 6, 0);
+
+        gui.addPane(pane);
+        gui.show(player);
     }
+
+    protected abstract void onConfirm();
+    protected abstract void onDeny();
 }

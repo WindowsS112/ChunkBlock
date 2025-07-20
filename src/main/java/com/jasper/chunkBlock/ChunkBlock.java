@@ -4,6 +4,7 @@ import com.jasper.chunkBlock.commands.CommandManager;
 import com.jasper.chunkBlock.listeners.PlayerJoinListener;
 import com.jasper.chunkBlock.util.BorderStorage;
 import com.jasper.chunkBlock.commands.team.Team;
+import com.jasper.chunkBlock.util.MessageUtils;
 import com.jasper.chunkBlock.util.TeamManager;
 import com.jasper.chunkBlock.util.TeamStorage;
 import org.bukkit.Bukkit;
@@ -20,6 +21,7 @@ import java.io.IOException;
 public final class ChunkBlock extends JavaPlugin {
 
     private BorderStorage borderStorage;
+    private TeamManager teamManager;
     private TeamStorage teamStorage;
     private Chunk chunk;
     private static ChunkBlock instance;
@@ -67,6 +69,8 @@ public final class ChunkBlock extends JavaPlugin {
         getCommand("c").setExecutor(new CommandManager(borderStorage, cSize, borderData,this, teamStorage, team,teamManager));
 
         Bukkit.getLogger().info("[ChunkBlock] -> Has Been Started!");
+        Bukkit.getLogger().info("[ChunkBlock] -> Version: " + getDescription().getVersion());
+        Bukkit.broadcastMessage("§a[ChunkBlock] Plugin is enabled!");
     }
 
     public void onDisable(){
@@ -84,5 +88,5 @@ public final class ChunkBlock extends JavaPlugin {
     public TeamStorage getTeamStorage() {
         return this.teamStorage;
     }
-
+    public TeamManager getTeamManager() { return this.teamManager; }
 }

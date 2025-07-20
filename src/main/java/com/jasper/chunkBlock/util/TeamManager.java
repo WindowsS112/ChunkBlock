@@ -102,11 +102,13 @@ public class TeamManager {
     /**
      * Zoek het team waar deze speler in zit (owner of member).
      */
-    public Optional<Team> getTeamOfPlayer(UUID playerUUID) {
-        return teamStorage.getTeams().values().stream()
-                .filter(team -> team.getOwner().equals(playerUUID)
-                        || team.getMembersOfTeam().contains(playerUUID))
-                .findFirst();
+    public Team getTeamFromPlayer(UUID playerUUID) {
+        for (Team team : teamStorage.getTeams().values()) { // teams is je Map<String, Team>
+            if (team.getMembersOfTeam().contains(playerUUID)) {
+                return team;
+            }
+        }
+        return null;
     }
 
     /**

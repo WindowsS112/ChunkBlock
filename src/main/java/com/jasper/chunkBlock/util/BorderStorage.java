@@ -3,7 +3,7 @@ package com.jasper.chunkBlock.util;
 import com.jasper.chunkBlock.ChunkBlock;
 import com.jasper.chunkBlock.commands.border.Border;
 import com.jasper.chunkBlock.commands.team.Team;
-import com.jasper.chunkBlock.gui.chunk.settings.SettingType;
+import com.jasper.chunkBlock.commands.chunk.settings.SettingType;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;

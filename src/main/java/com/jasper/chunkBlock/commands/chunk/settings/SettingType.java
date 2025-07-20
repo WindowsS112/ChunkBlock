@@ -1,4 +1,4 @@
-package com.jasper.chunkBlock.gui.chunk.settings;
+package com.jasper.chunkBlock.commands.chunk.settings;
 
 import com.jasper.chunkBlock.commands.border.Border;
 import com.sk89q.worldguard.protection.flags.StateFlag;

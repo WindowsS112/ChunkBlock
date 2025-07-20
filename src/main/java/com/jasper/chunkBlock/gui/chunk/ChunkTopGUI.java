@@ -5,7 +5,7 @@ import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
 import com.jasper.chunkBlock.commands.team.Team;
-import com.jasper.chunkBlock.gui.chunk.settings.SettingType;
+import com.jasper.chunkBlock.commands.chunk.settings.SettingType;
 import com.jasper.chunkBlock.commands.border.Border;
 import com.jasper.chunkBlock.ChunkBlock;
 import org.bukkit.Bukkit;

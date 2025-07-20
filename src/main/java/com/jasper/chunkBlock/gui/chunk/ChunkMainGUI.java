@@ -7,6 +7,7 @@ import com.github.stefvanschie.inventoryframework.pane.Pane;
 import com.jasper.chunkBlock.ChunkBlock;
 import com.jasper.chunkBlock.commands.border.Border;
 import com.jasper.chunkBlock.commands.team.Team;
+import com.jasper.chunkBlock.util.MessageUtils;
 import com.jasper.chunkBlock.util.TeamManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -18,12 +19,10 @@ public class ChunkMainGUI {
     private Player player;
     private final Team team;
     private final Border border;
-    private TeamManager teamManager;
 
-    public ChunkMainGUI(Player player, Team team, TeamManager teamManager) {
+    public ChunkMainGUI(Player player, Team team) {
         this.player = player;
         this.team = team;
-        this.teamManager = teamManager;
         this.border = ChunkBlock.getInstance().getBorderStorage().getBorder(team);
         if (this.border == null) {
             throw new IllegalStateException("Border niet d voor team: " + team.getTeamName());
@@ -31,8 +30,9 @@ public class ChunkMainGUI {
     }
 
     public void open() {
-        ChestGui gui = new ChestGui(4, "Chunk - Menu");
+        TeamManager teamManager = ChunkBlock.getInstance().getTeamManager();
 
+        ChestGui gui = new ChestGui(4, "Chunk - Menu");
         gui.setOnGlobalClick(event -> event.setCancelled(true));
 
         OutlinePane background = new OutlinePane(0, 0, 9, 4, Pane.Priority.LOWEST);
@@ -43,31 +43,33 @@ public class ChunkMainGUI {
 
         OutlinePane navigationPane = new OutlinePane(1, 1, 3, 2);
 
+
+        // HOME BUTTON
         ItemStack shop = new ItemStack(Material.OAK_DOOR);
         ItemMeta shopMeta = shop.getItemMeta();
         shopMeta.setDisplayName("Chunk - Home");
         shop.setItemMeta(shopMeta);
-
         navigationPane.addItem(new GuiItem(shop, event -> {
             player.teleport(border.getDefaultHome());
+            MessageUtils.sendSuccess(player, "Teleported to your chunk home");
         }));
 
-        ItemStack beacon = new ItemStack(Material.BOOK);
-        ItemMeta beaconMeta = beacon.getItemMeta();
-        beaconMeta.setDisplayName("Chunk - Settings");
-        beacon.setItemMeta(beaconMeta);
-
-        navigationPane.addItem(new GuiItem(beacon, event -> {
+        // SETTINGS BUTTON
+        ItemStack settings = new ItemStack(Material.BOOK);
+        ItemMeta settingsMeta = settings.getItemMeta();
+        settingsMeta.setDisplayName("Chunk - Settings");
+        settings.setItemMeta(settingsMeta);
+        navigationPane.addItem(new GuiItem(settings, event -> {
             ChunkSettingsGUI ch = new ChunkSettingsGUI(player, team);
             ch.open();
         }));
 
-        ItemStack bed = new ItemStack(Material.RED_BED);
-        ItemMeta bedMeta = bed.getItemMeta();
-        bedMeta.setDisplayName("Chunk - Home");
-        bed.setItemMeta(bedMeta);
-
-        navigationPane.addItem(new GuiItem(bed, event -> {
+        // BORDER BUTTON
+        ItemStack border = new ItemStack(Material.RED_BED);
+        ItemMeta borderMeta = border.getItemMeta();
+        borderMeta.setDisplayName("Chunk - Border ");
+        border.setItemMeta(borderMeta);
+        navigationPane.addItem(new GuiItem(border, event -> {
             //navigate to home
         }));
 
@@ -77,7 +79,7 @@ public class ChunkMainGUI {
         players.setItemMeta(playerMeta);
 
         navigationPane.addItem(new GuiItem(players, event -> {
-            ChunkPlayersGUI chunkPlayersGUI = new ChunkPlayersGUI(player,team,teamManager);
+            ChunkPlayersGUI chunkPlayersGUI = new ChunkPlayersGUI(player,team);
             chunkPlayersGUI.open();
         }));
 
@@ -87,7 +89,7 @@ public class ChunkMainGUI {
         chunkTop.setItemMeta(chunkTopMeta);
 
         navigationPane.addItem(new GuiItem(players, event -> {
-            ChunkPlayersGUI chunkPlayersGUI = new ChunkPlayersGUI(player,team,teamManager);
+            ChunkPlayersGUI chunkPlayersGUI = new ChunkPlayersGUI(player,team);
             chunkPlayersGUI.open();
         }));
 

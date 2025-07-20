@@ -1,6 +1,7 @@
 package com.jasper.chunkBlock.commands.team;
 
 import com.jasper.chunkBlock.commands.SubCommand;
+import com.jasper.chunkBlock.gui.chunk.DisbandChunkGUI;
 import com.jasper.chunkBlock.util.BorderStorage;
 import com.jasper.chunkBlock.util.RegionSynchronizer;
 import com.jasper.chunkBlock.util.TeamStorage;
@@ -52,11 +53,10 @@ public class DisbandTeamCommand extends SubCommand {
 
             if (teamStorage.isPlayerInAnyTeam(player.getUniqueId())) {
                 if (teamStorage.checkTeamExist(team) && team.getOwner().equals(player.getUniqueId())) {
-                    RegionSynchronizer.deleteRegion(team,borderStorage.getBorder(team));
-
-                    teamStorage.removeTeam(team, player);
-                    borderStorage.removeBorder(team);
-                } else if (!team.getOwner().equals(player.getUniqueId())) {
+                    DisbandChunkGUI disbandTeamGUI = new DisbandChunkGUI(player, team, borderStorage, teamStorage);
+                    disbandTeamGUI.open();
+                }
+                 else if (!team.getOwner().equals(player.getUniqueId())) {
                     player.sendMessage(ChatColor.RED + "You are not the owner of this team");
                 } else {
                     player.sendMessage(ChatColor.RED + "Team does not exist.");

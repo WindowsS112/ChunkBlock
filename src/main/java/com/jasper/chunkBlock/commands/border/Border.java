@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
-import com.jasper.chunkBlock.gui.chunk.settings.SettingType;
+import com.jasper.chunkBlock.commands.chunk.settings.SettingType;
 
 public class Border {
 

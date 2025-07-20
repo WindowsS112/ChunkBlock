@@ -5,12 +5,10 @@ import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
 import com.jasper.chunkBlock.commands.team.Team;
-import com.jasper.chunkBlock.gui.chunk.settings.SettingType;
 import com.jasper.chunkBlock.commands.border.Border;
 import com.jasper.chunkBlock.ChunkBlock;
 import com.jasper.chunkBlock.util.MessageUtils;
 import com.jasper.chunkBlock.util.TeamManager;
-import com.jasper.chunkBlock.util.TeamStorage;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -20,7 +18,6 @@ import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.UUID;
@@ -33,10 +30,9 @@ public class ChunkPlayersGUI {
     private final Border border;
     private TeamManager teamManager;
 
-    public ChunkPlayersGUI(Player player, Team team, TeamManager teamManager) {
+    public ChunkPlayersGUI(Player player, Team team) {
         this.player = player;
         this.team = team;
-        this.teamManager = teamManager;
         this.border = ChunkBlock.getInstance().getBorderStorage().getBorder(team);
         if (this.border == null) {
             throw new IllegalStateException("Border niet gevonden voor team: " + team.getTeamName());
@@ -44,6 +40,7 @@ public class ChunkPlayersGUI {
     }
 
     public void open() {
+        teamManager = ChunkBlock.getInstance().getTeamManager();
         ChestGui gui = new ChestGui(4, "Chunk - Players");
 
         PaginatedPane pages = new PaginatedPane(0, 0, 9, 3);

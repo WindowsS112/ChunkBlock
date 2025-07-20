@@ -17,6 +17,7 @@ public class RegionSynchronizer {
 
     public static void syncRegionFromBorder(Team team, Border border) {
         World world = border.getCenter().getWorld();
+
         RegionManager manager = WorldGuard.getInstance()
                 .getPlatform()
                 .getRegionContainer()
@@ -70,5 +71,23 @@ public class RegionSynchronizer {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
+
+    public static void deleteRegion(Team team, Border border) {
+        World world = border.getCenter().getWorld();
+        RegionManager manager = WorldGuard.getInstance()
+                .getPlatform()
+                .getRegionContainer()
+                .get(BukkitAdapter.adapt(world));
+
+        if (manager == null) return;
+
+        String regionId = "team_" + team.getTeamName().toLowerCase();
+
+        if (manager.hasRegion(regionId)) {
+            manager.removeRegion(regionId);
+        }
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.jasper.chunkBlock.util;
 
 import com.jasper.chunkBlock.commands.team.Team;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -74,11 +75,17 @@ public class TeamManager {
      */
     public boolean removeMember(String teamName, UUID member) {
         Team team = teamStorage.getTeams().get(teamName.toLowerCase());
+
+        UUID uuid = UUID.fromString(member.toString());
+        Player player = Bukkit.getPlayer(uuid);
+
         if (team == null) return false;
 
         // Zorg dat je niet de owner verwijdert
         if (team.getOwner().equals(member)) {
             return false;
+        } else if (player != null) {
+            borderStorage.removeBorder(player);
         }
 
         team.leaveTeam(member, teamStorage);  // implementeer in Team

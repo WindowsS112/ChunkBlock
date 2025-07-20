@@ -13,7 +13,7 @@ public class ChunkMainCommand {
     }
 
     public void open(Player player, TeamStorage teamStorage) {
-        ChunkMainGUI chunkMainGUI = new ChunkMainGUI(player, teamStorage.getTeamFromPlayer(player.getUniqueId()));
+        ChunkMainGUI chunkMainGUI = new ChunkMainGUI(player, teamStorage.getTeamFromPlayer(player.getUniqueId(),team));
         chunkMainGUI.open();
     }
 }

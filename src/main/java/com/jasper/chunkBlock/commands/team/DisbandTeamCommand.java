@@ -2,9 +2,14 @@ package com.jasper.chunkBlock.commands.team;
 
 import com.jasper.chunkBlock.commands.SubCommand;
 import com.jasper.chunkBlock.util.BorderStorage;
+import com.jasper.chunkBlock.util.RegionSynchronizer;
 import com.jasper.chunkBlock.util.TeamStorage;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.flags.StateFlag;
+import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 
 public class DisbandTeamCommand extends SubCommand {
     private Team team;
@@ -47,6 +52,8 @@ public class DisbandTeamCommand extends SubCommand {
 
             if (teamStorage.isPlayerInAnyTeam(player.getUniqueId())) {
                 if (teamStorage.checkTeamExist(team) && team.getOwner().equals(player.getUniqueId())) {
+                    RegionSynchronizer.deleteRegion(team,borderStorage.getBorder(team));
+
                     teamStorage.removeTeam(team, player);
                     borderStorage.removeBorder(team);
                 } else if (!team.getOwner().equals(player.getUniqueId())) {

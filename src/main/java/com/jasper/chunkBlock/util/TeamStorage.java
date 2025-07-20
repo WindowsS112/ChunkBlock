@@ -133,7 +133,7 @@ public class TeamStorage {
     public void removeMemberFromTeam(String teamName, UUID playerUUID) {
         Team team = teams.get(teamName.toLowerCase());
         if (team == null) {
-            System.out.println("Team not found: " + teamName);
+            Bukkit.getLogger().info("Team not found: " + teamName);
             return;
         }
 

@@ -8,9 +8,6 @@ import com.jasper.chunkBlock.commands.team.Team;
 import com.jasper.chunkBlock.gui.chunk.settings.SettingType;
 import com.jasper.chunkBlock.commands.border.Border;
 import com.jasper.chunkBlock.ChunkBlock;
-import com.jasper.chunkBlock.util.MessageUtils;
-import com.jasper.chunkBlock.util.TeamManager;
-import com.jasper.chunkBlock.util.TeamStorage;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -26,17 +23,16 @@ import java.util.List;
 import java.util.UUID;
 
 
-public class ChunkPlayersGUI {
+public class ChunkTopGUI {
 
     private final Player player;
     private final Team team;
     private final Border border;
-    private TeamManager teamManager;
 
-    public ChunkPlayersGUI(Player player, Team team, TeamManager teamManager) {
+    public ChunkTopGUI(Player player, Team team) {
         this.player = player;
         this.team = team;
-        this.teamManager = teamManager;
+
         this.border = ChunkBlock.getInstance().getBorderStorage().getBorder(team);
         if (this.border == null) {
             throw new IllegalStateException("Border niet gevonden voor team: " + team.getTeamName());
@@ -44,7 +40,7 @@ public class ChunkPlayersGUI {
     }
 
     public void open() {
-        ChestGui gui = new ChestGui(4, "Chunk - Players");
+        ChestGui gui = new ChestGui(4, "Chunk - Top");
 
         PaginatedPane pages = new PaginatedPane(0, 0, 9, 3);
         OutlinePane settingsPane = new OutlinePane(0, 0, 9, 3);
@@ -55,24 +51,14 @@ public class ChunkPlayersGUI {
             ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
             SkullMeta meta = (SkullMeta) skull.getItemMeta();
             meta.setOwningPlayer(member);
-
-            String rank;
-
-            if (team.getOwner().equals(member)) {
-                rank = "owner";
-            } else {
-                rank = "member";
-            }
-
-            meta.setDisplayName("§e" + member.getName() + " " + rank);
+            meta.setDisplayName("§e" + member.getName());
             meta.setLore(List.of("§7UUID: " + memberUUID.toString()));
             skull.setItemMeta(meta);
 
             GuiItem guiItem = new GuiItem(skull, event -> {
                 event.setCancelled(true);
-
-                teamManager.removeMember(team.getTeamName(), memberUUID);
-                MessageUtils.sendSuccess(player,  team.getOwner().toString());
+                player.sendMessage("§7Je klikte op: §e" + member.getName());
+                // Voeg eventueel functionaliteit toe zoals "speler kicken" of "info bekijken"
             });
 
             settingsPane.addItem(guiItem);
@@ -121,5 +107,22 @@ public class ChunkPlayersGUI {
         gui.show(player);
     }
 
+    private @NotNull GuiItem getGuiItem(SettingType setting, boolean state) {
+        ItemStack item = new ItemStack(setting.getIcon());
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName("§e" + setting.getDisplayName() + ": " + (state ? "§aTRUE" : "§cFALSE"));
+        item.setItemMeta(meta);
 
+        // Wrap in GuiItem en voeg klikactie toe
+        GuiItem guiItem = new GuiItem(item, event -> {
+            event.setCancelled(true); // voorkom dat item wordt verplaatst
+
+            // Toggle setting
+            border.toggleSetting(setting);
+
+            // Herlaad GUI
+            new ChunkSettingsGUI(player, team).open();
+        });
+        return guiItem;
+    }
 }

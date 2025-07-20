@@ -47,15 +47,12 @@ public enum SettingType {
     public String getDisplayName() {
         return displayName;
     }
-
     public Material getIcon() {
         return icon;
     }
-
     public boolean getDefaultValue() {
         return defaultValue;
     }
-
     public StateFlag getFlag() {
         return flag;
     }

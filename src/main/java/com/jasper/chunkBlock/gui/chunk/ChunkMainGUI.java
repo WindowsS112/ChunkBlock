@@ -7,6 +7,7 @@ import com.github.stefvanschie.inventoryframework.pane.Pane;
 import com.jasper.chunkBlock.ChunkBlock;
 import com.jasper.chunkBlock.commands.border.Border;
 import com.jasper.chunkBlock.commands.team.Team;
+import com.jasper.chunkBlock.util.TeamManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -17,11 +18,12 @@ public class ChunkMainGUI {
     private Player player;
     private final Team team;
     private final Border border;
+    private TeamManager teamManager;
 
-    public ChunkMainGUI(Player player, Team team) {
+    public ChunkMainGUI(Player player, Team team, TeamManager teamManager) {
         this.player = player;
         this.team = team;
-
+        this.teamManager = teamManager;
         this.border = ChunkBlock.getInstance().getBorderStorage().getBorder(team);
         if (this.border == null) {
             throw new IllegalStateException("Border niet d voor team: " + team.getTeamName());
@@ -75,7 +77,17 @@ public class ChunkMainGUI {
         players.setItemMeta(playerMeta);
 
         navigationPane.addItem(new GuiItem(players, event -> {
-            ChunkPlayersGUI chunkPlayersGUI = new ChunkPlayersGUI(player,team);
+            ChunkPlayersGUI chunkPlayersGUI = new ChunkPlayersGUI(player,team,teamManager);
+            chunkPlayersGUI.open();
+        }));
+
+        ItemStack chunkTop = new ItemStack(Material.BEACON);
+        ItemMeta  chunkTopMeta = players.getItemMeta();
+        chunkTopMeta.setDisplayName("Chunk - Top");
+        chunkTop.setItemMeta(chunkTopMeta);
+
+        navigationPane.addItem(new GuiItem(players, event -> {
+            ChunkPlayersGUI chunkPlayersGUI = new ChunkPlayersGUI(player,team,teamManager);
             chunkPlayersGUI.open();
         }));
 

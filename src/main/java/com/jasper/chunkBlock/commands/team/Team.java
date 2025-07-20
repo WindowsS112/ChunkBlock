@@ -1,5 +1,6 @@
 package com.jasper.chunkBlock.commands.team;
 
+import com.jasper.chunkBlock.util.MessageUtils;
 import com.jasper.chunkBlock.util.TeamStorage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -27,26 +28,13 @@ public class Team {
     public void joinTeam(UUID uuid, TeamStorage teamStorage) {
         Player player = Bukkit.getPlayer(uuid);
 
-        if (!teamStorage.isPlayerInAnyTeam(uuid)) {
+        if (!teamStorage.isPlayerInAnyTeam(uuid) && player != null) {
+            MessageUtils.sendSuccess(player, "You have joined the team " + getTeamName() + "!");
             members.add(uuid);
-            if (player != null) {
-                player.sendMessage(ChatColor.GREEN + "You have joined the team " + getTeamName() + "!");
-                members.add(uuid);
-                teamStorage.saveConfig();
-
-                for (UUID memberUuid : members) {
-                    Player member = Bukkit.getPlayer(memberUuid);
-                    if (member != null) {
-                        Bukkit.getLogger().info("Team member: " + member.getName());
-                    } else {
-                        Bukkit.getLogger().info("Team member UUID: " + memberUuid);
-                    }
-                }
-
-            }
+            teamStorage.saveConfig();
         } else {
-            if (player != null) {
-                player.sendMessage(ChatColor.RED + "You are already in a chunkparty! " + getTeamName());
+            if (player != null && player.getUniqueId() != getOwner()) {
+                MessageUtils.sendError(player, "You are already in a chunkparty! " + getTeamName());
             }
         }
     }
@@ -56,8 +44,8 @@ public class Team {
 
         if (teamStorage.isPlayerInAnyTeam(uuid)) {
             members.remove(uuid);
-            player.sendMessage(ChatColor.GREEN + "Left: " + getTeamName() + "!");
-
+            teamStorage.saveConfig();
+            MessageUtils.sendSuccess(player, "You have left: " + getTeamName() + "!");
         } else {
             if (player != null) {
                 player.sendMessage(ChatColor.RED + "You don't have a team!");

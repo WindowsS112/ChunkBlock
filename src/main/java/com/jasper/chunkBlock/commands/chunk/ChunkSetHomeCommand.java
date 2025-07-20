@@ -26,6 +26,19 @@ public class ChunkSetHomeCommand extends SubCommand {
     }
 
     @Override
+    public void perform(Player player, String[] args) {
+        Team playerTeam = teamStorage.getTeamFromPlayer(player.getUniqueId());
+        if (teamStorage.checkTeamExist(playerTeam)) {
+            Location home = player.getLocation().clone();
+            Border border = borderStorage.getBorder(playerTeam);
+            border.setHome(home);
+            MessageUtils.sendSuccess(player,"Succesfully set new home");
+        } else {
+            MessageUtils.sendError(player,"&cYou don't have a team");
+        }
+    }
+
+    @Override
     public String getName() {
         return "sethome";
     }
@@ -38,18 +51,5 @@ public class ChunkSetHomeCommand extends SubCommand {
     @Override
     public String getSyntax() {
         return "/c sethome";
-    }
-
-    @Override
-    public void perform(Player player, String[] args) {
-        Team playerTeam = teamStorage.getTeamFromPlayer(player.getUniqueId());
-        if (teamStorage.checkTeamExist(playerTeam)) {
-            Location home = player.getLocation().clone();
-            Border border = borderStorage.getBorder(playerTeam);
-            border.setHome(home);
-            MessageUtils.sendSuccess(player,"Succesfully set new home");
-        } else {
-            MessageUtils.sendError(player,"&cYou don't have a team");
-        }
     }
 }

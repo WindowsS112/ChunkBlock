@@ -40,6 +40,7 @@ public class Border {
 
     public void setHome(Location location) {
         defaultHome = location;
+        ChunkBlock.getInstance().getBorderStorage().saveBorder(owner);
     }
 
     //–– Getters ––//
@@ -99,13 +100,6 @@ public class Border {
     }
 
     /**
-     * Unieke key voor opslag/lookup in je BorderStorage: "world:x,z"
-     */
-    public String getKey() {
-        return worldName + ":" + x + "," + z;
-    }
-
-    /**
      * Maak een nieuwe WorldBorder die je per-player kunt toewijzen.
      * @return een volledig geconfigureerde, lege WorldBorder
      */
@@ -146,11 +140,6 @@ public class Border {
                 z == border.z &&
                 Double.compare(border.radius, radius) == 0 &&
                 Objects.equals(worldName, border.worldName);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(worldName, x, z, radius);
     }
 
     @Override

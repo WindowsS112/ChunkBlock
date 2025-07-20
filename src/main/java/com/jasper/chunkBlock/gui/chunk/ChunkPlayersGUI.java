@@ -33,6 +33,7 @@ public class ChunkPlayersGUI {
     public ChunkPlayersGUI(Player player, Team team) {
         this.player = player;
         this.team = team;
+        this.teamManager = ChunkBlock.getInstance().getTeamManager();
         this.border = ChunkBlock.getInstance().getBorderStorage().getBorder(team);
         if (this.border == null) {
             throw new IllegalStateException("Border niet gevonden voor team: " + team.getTeamName());
@@ -40,6 +41,7 @@ public class ChunkPlayersGUI {
     }
 
     public void open() {
+
         teamManager = ChunkBlock.getInstance().getTeamManager();
         ChestGui gui = new ChestGui(4, "Chunk - Players");
 

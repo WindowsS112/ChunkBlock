@@ -2,10 +2,7 @@ package com.jasper.chunkBlock.commands;
 
 import com.jasper.chunkBlock.ChunkBlock;
 import com.jasper.chunkBlock.commands.border.BorderBypassCommand;
-import com.jasper.chunkBlock.commands.chunk.ChunkMainCommand;
-import com.jasper.chunkBlock.commands.chunk.ChunkSettingsCommand;
-import com.jasper.chunkBlock.commands.chunk.ChunkHomeCommand;
-import com.jasper.chunkBlock.commands.chunk.ChunkSetHomeCommand;
+import com.jasper.chunkBlock.commands.chunk.*;
 import com.jasper.chunkBlock.commands.team.*;
 import com.jasper.chunkBlock.commands.util.HulpCommand;
 import com.jasper.chunkBlock.commands.util.ShowTeams;
@@ -49,6 +46,7 @@ public class CommandManager implements CommandExecutor {
         subcommands.add(new ChunkSetHomeCommand("","","",team,borderStorage, teamStorage));
         subcommands.add(new ChunkSettingsCommand("","","",team,teamStorage));
         subcommands.add(new ShowTeams("","","",teamStorage));
+        subcommands.add(new ChunkUpgradeCommand("", "", "",teamStorage));
     }
 
     @Override

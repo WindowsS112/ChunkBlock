@@ -4,6 +4,8 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
+import com.github.stefvanschie.inventoryframework.pane.PatternPane;
+import com.github.stefvanschie.inventoryframework.pane.util.Pattern;
 import com.jasper.chunkBlock.ChunkBlock;
 import com.jasper.chunkBlock.commands.border.Border;
 import com.jasper.chunkBlock.commands.team.Team;
@@ -32,16 +34,17 @@ public class ChunkMainGUI {
     public void open() {
         TeamManager teamManager = ChunkBlock.getInstance().getTeamManager();
 
-        ChestGui gui = new ChestGui(4, "Chunk - Menu");
+        ChestGui gui = new ChestGui(5, "Chunk - Menu");
         gui.setOnGlobalClick(event -> event.setCancelled(true));
+        PatternPane paneel = new PatternPane(0, 0, 9, 5, patroon);
 
-        OutlinePane background = new OutlinePane(0, 0, 9, 4, Pane.Priority.LOWEST);
-        background.addItem(new GuiItem(new ItemStack(Material.BLACK_STAINED_GLASS_PANE)));
+
+        // FILLER PANE
+        OutlinePane background = new OutlinePane(0, 0, 9, 5, Pane.Priority.LOWEST);
+        background.addItem(new GuiItem(new ItemStack(Material.BLUE_STAINED_GLASS_PANE)));
         background.setRepeat(true);
 
-        gui.addPane(background);
-
-        OutlinePane navigationPane = new OutlinePane(1, 1, 3, 2);
+        OutlinePane navigationPane = new OutlinePane(1, 1, 3, 3);
 
 
         // HOME BUTTON
@@ -65,7 +68,7 @@ public class ChunkMainGUI {
         }));
 
         // BORDER BUTTON
-        ItemStack border = new ItemStack(Material.RED_BED);
+        ItemStack border = new ItemStack(Material.BARRIER);
         ItemMeta borderMeta = border.getItemMeta();
         borderMeta.setDisplayName("Chunk - Border ");
         border.setItemMeta(borderMeta);
@@ -73,7 +76,8 @@ public class ChunkMainGUI {
             //navigate to home
         }));
 
-        ItemStack players = new ItemStack(Material.ACACIA_LEAVES);
+        // CHUNK PLAYERS
+        ItemStack players = new ItemStack(Material.PLAYER_HEAD);
         ItemMeta  playerMeta = players.getItemMeta();
         playerMeta.setDisplayName("Chunk - Players");
         players.setItemMeta(playerMeta);
@@ -83,17 +87,32 @@ public class ChunkMainGUI {
             chunkPlayersGUI.open();
         }));
 
+        // CHUNK TOP
         ItemStack chunkTop = new ItemStack(Material.BEACON);
-        ItemMeta  chunkTopMeta = players.getItemMeta();
+        ItemMeta  chunkTopMeta = chunkTop.getItemMeta();
         chunkTopMeta.setDisplayName("Chunk - Top");
         chunkTop.setItemMeta(chunkTopMeta);
 
-        navigationPane.addItem(new GuiItem(players, event -> {
-            ChunkPlayersGUI chunkPlayersGUI = new ChunkPlayersGUI(player,team);
-            chunkPlayersGUI.open();
+        navigationPane.addItem(new GuiItem(chunkTop, event -> {
+            ChunkTopGUI chunkTopGUI = new ChunkTopGUI(player,team);
+            chunkTopGUI.open();
         }));
 
+        // FILLER CIRCLE
+        paneel.bindItem('1', new GuiItem(new ItemStack(Material.GRAY_STAINED_GLASS_PANE)));
+
+        gui.addPane(background);
         gui.addPane(navigationPane);
+        gui.addPane(paneel);
         gui.show(player);
     }
+
+    // FILLER LIGHT BLUE
+    Pattern patroon = new Pattern(
+            "000000000",
+            "000001110",
+            "000001010",
+            "000001110",
+            "000000000"
+    );
 }

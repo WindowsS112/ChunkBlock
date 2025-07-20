@@ -62,6 +62,7 @@ public class BorderStorage {
         borderstoragefile.set(path + ".home.z", border.getDefaultHome().getZ());
         borderstoragefile.set(path + ".home.yaw", border.getDefaultHome().getYaw());
         borderstoragefile.set(path + ".home.pitch", border.getDefaultHome().getPitch());
+        borderstoragefile.set(path + ".level", team.getLevel());
 
         for (SettingType type : SettingType.values()) {
             boolean enabled = border.isSettingEnabled(type);
@@ -99,6 +100,7 @@ public class BorderStorage {
         float homePitch = (float) borderstoragefile.getDouble(path + ".home.pitch");
         World world = Bukkit.getWorld(worldName);
         Location defaultHome = new Location(world, homeX, homeY, homeZ, homeYaw, homePitch);
+        int level = borderstoragefile.getInt(path + ".level", 10);
 
         if (world == null) {
             plugin.getLogger().warning("World not found: " + worldName);

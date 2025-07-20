@@ -17,6 +17,7 @@ public class Team {
     private String teamName;
     private Set<UUID> members = new HashSet<>();
     private UUID owner;
+    private int level = 1;
 
     public Team(String id, UUID owner, String teamName, Set<UUID> members) {
         this.owner = owner;
@@ -69,15 +70,12 @@ public class Team {
         }
     }
 
+    public int getLevel() {
+        return level;
+    }
 
     public String getTeamName() { return teamName; }
-
-    public UUID getOwner() {
-        return this.owner;
-    }
-
-    public Set<UUID> getMembersOfTeam() {
-        return members;
-    }
+    public UUID getOwner() { return this.owner; }
+    public Set<UUID> getMembersOfTeam() { return members; }
 
 }

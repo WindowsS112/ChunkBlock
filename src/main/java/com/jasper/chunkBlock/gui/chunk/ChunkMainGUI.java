@@ -11,21 +11,27 @@ import com.jasper.chunkBlock.commands.border.Border;
 import com.jasper.chunkBlock.commands.team.Team;
 import com.jasper.chunkBlock.util.MessageUtils;
 import com.jasper.chunkBlock.util.TeamManager;
+import com.jasper.chunkBlock.util.TeamStorage;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.List;
+
 
 public class ChunkMainGUI {
 
     private Player player;
     private final Team team;
     private final Border border;
+    private TeamStorage teamStorage;
 
     public ChunkMainGUI(Player player, Team team) {
         this.player = player;
         this.team = team;
         this.border = ChunkBlock.getInstance().getBorderStorage().getBorder(team);
+        teamStorage = ChunkBlock.getInstance().getTeamStorage();
         if (this.border == null) {
             throw new IllegalStateException("Border niet d voor team: " + team.getTeamName());
         }
@@ -45,7 +51,7 @@ public class ChunkMainGUI {
         background.setRepeat(true);
 
         OutlinePane navigationPane = new OutlinePane(1, 1, 3, 3);
-
+        OutlinePane circleCenter = new OutlinePane(6,2,1,1, Pane.Priority.HIGH);
 
         // HOME BUTTON
         ItemStack shop = new ItemStack(Material.OAK_DOOR);
@@ -88,14 +94,34 @@ public class ChunkMainGUI {
         }));
 
         // CHUNK TOP
-        ItemStack chunkTop = new ItemStack(Material.BEACON);
+        ItemStack chunkTop = new ItemStack(Material.ACACIA_HANGING_SIGN);
         ItemMeta  chunkTopMeta = chunkTop.getItemMeta();
         chunkTopMeta.setDisplayName("Chunk - Top");
         chunkTop.setItemMeta(chunkTopMeta);
-
         navigationPane.addItem(new GuiItem(chunkTop, event -> {
             ChunkTopGUI chunkTopGUI = new ChunkTopGUI(player,team);
             chunkTopGUI.open();
+        }));
+
+        // CHUNK UPGRADE
+        ItemStack upgrade = new ItemStack(Material.CHEST);
+        ItemMeta  upgradeMeta = upgrade.getItemMeta();
+        upgradeMeta.setDisplayName("Chunk - Upgrade");
+        upgrade.setItemMeta(upgradeMeta);
+        navigationPane.addItem(new GuiItem(upgrade, event -> {
+            ChunkUpgradeGUI upgradeGUI = new ChunkUpgradeGUI(player,team,teamStorage);
+            upgradeGUI.open();
+        }));
+
+        // CHUNK CIRCLE STATS
+        ItemStack chunk = new ItemStack(Material.BEACON);
+        ItemMeta  chunkMeta = chunk.getItemMeta();
+        chunkMeta.setDisplayName("Chunk - " + team.getTeamName());
+        chunkMeta.setLore();
+
+        chunk.setItemMeta(chunkMeta);
+        circleCenter.addItem(new GuiItem(chunk, event -> {
+            //logic
         }));
 
         // FILLER CIRCLE
@@ -104,6 +130,7 @@ public class ChunkMainGUI {
         gui.addPane(background);
         gui.addPane(navigationPane);
         gui.addPane(paneel);
+        gui.addPane(circleCenter);
         gui.show(player);
     }
 

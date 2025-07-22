@@ -17,13 +17,14 @@ public class Team {
     private String teamName;
     private Set<UUID> members = new HashSet<>();
     private UUID owner;
-    private int level = 1;
+    private int level;
 
-    public Team(String id, UUID owner, String teamName, Set<UUID> members) {
+    public Team(String id, UUID owner, String teamName, Set<UUID> members, int level) {
         this.owner = owner;
         this.teamName = teamName;
         this.members = new HashSet<>(members);
         this.members.add(owner);
+        this.level = level;
     }
 
     public void joinTeam(UUID uuid, TeamStorage teamStorage) {
@@ -49,7 +50,7 @@ public class Team {
             MessageUtils.sendSuccess(player, "You have left: " + getTeamName() + "!");
         } else {
             if (player != null) {
-                player.sendMessage(ChatColor.RED + "You don't have a team!");
+                MessageUtils.sendError(player,  "You don't have a team!");
             }
         }
     }
@@ -70,10 +71,14 @@ public class Team {
         }
     }
 
+    public void upgrade(TeamStorage teamStorage, int upgradedLevel) {
+        level = upgradedLevel;
+        teamStorage.saveConfig();
+    }
+
     public int getLevel() {
         return level;
     }
-
     public String getTeamName() { return teamName; }
     public UUID getOwner() { return this.owner; }
     public Set<UUID> getMembersOfTeam() { return members; }

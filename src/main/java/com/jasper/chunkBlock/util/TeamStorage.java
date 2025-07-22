@@ -28,59 +28,55 @@ public class TeamStorage {
     }
 
     public void loadTeams() {
-        if (teamsstoragefile.contains("Teams")) {
-            ConfigurationSection teamsSection = teamsstoragefile.getConfigurationSection("Teams");
-            if (teamsSection == null) {
-                Bukkit.getLogger().warning("Teams section is null!");
-                return;
-            }
+        ConfigurationSection teamsSection = teamsstoragefile.getConfigurationSection("Teams");
 
-            for (String teamName : teamsSection.getKeys(false)) {
-                ConfigurationSection teamSection = teamsSection.getConfigurationSection(teamName);
-                if (teamSection == null) {
-                    Bukkit.getLogger().warning("Team section for " + teamName + " is null!");
-                    continue;
-                }
-
-                String ownerString = teamSection.getString("owner");
-                if (ownerString == null) {
-                    Bukkit.getLogger().warning("Owner UUID string is null for team " + teamName);
-                    continue;
-                }
-
-                UUID ownerUUID;
-                try {
-                    ownerUUID = UUID.fromString(ownerString);
-                } catch (IllegalArgumentException e) {
-                    Bukkit.getLogger().warning("Owner UUID string is niet geldig voor team " + teamName + ": " + ownerString);
-                    continue;
-                }
-
-                List<String> memberStrings = teamSection.getStringList("members");
-                Set<UUID> members = new HashSet<>();
-                for (String memberStr : memberStrings) {
-                    try {
-                        UUID memberUUID = UUID.fromString(memberStr);
-                        members.add(memberUUID);
-                    } catch (IllegalArgumentException e) {
-                        Bukkit.getLogger().warning("Ongeldige member UUID in team " + teamName + ": " + memberStr);
-                    }
-                }
-
-                Team team = new Team(ownerUUID.toString(), ownerUUID, teamName,members);
-                for (UUID memberUUID : members) {
-                    if (!memberUUID.equals(ownerUUID)) {
-                        team.joinTeam(memberUUID, this);
-                    }
-                }
-
-                // voeg toe aan opslag
-                addTeam(team);
-                saveConfig();
-                Bukkit.getLogger().info("Loaded team: " + team.getTeamName() + " with members: " + team.getMembersOfTeam());
-
-            }
+        if (teamsSection == null) {
+            Bukkit.getLogger().warning("Teams section is null!");
+            return;
         }
+
+        for (String teamName : teamsSection.getKeys(false)) {
+            ConfigurationSection teamSection = teamsSection.getConfigurationSection(teamName);
+
+            String ownerString = teamSection.getString("owner");
+            if (ownerString == null) {
+                Bukkit.getLogger().warning("Owner UUID string is null for team " + teamName);
+                continue;
+            }
+
+            int level = teamSection.getInt("level");
+
+            UUID ownerUUID;
+            try {
+                ownerUUID = UUID.fromString(ownerString);
+            } catch (IllegalArgumentException e) {
+                Bukkit.getLogger().warning("Owner UUID string is niet geldig voor team " + teamName + ": " + ownerString);
+                continue;
+            }
+
+            List<String> memberStrings = teamSection.getStringList("members");
+            Set<UUID> members = new HashSet<>();
+            for (String memberStr : memberStrings) {
+                try {
+                    UUID memberUUID = UUID.fromString(memberStr);
+                    members.add(memberUUID);
+                } catch (IllegalArgumentException e) {
+                    Bukkit.getLogger().warning("Ongeldige member UUID in team " + teamName + ": " + memberStr);
+                }
+            }
+
+            Team team = new Team(ownerUUID.toString(), ownerUUID, teamName,members,level);
+            for (UUID memberUUID : members) {
+                if (!memberUUID.equals(ownerUUID)) {
+                    team.joinTeam(memberUUID, this);
+                }
+            }
+
+            // Add to storage
+            addTeam(team);
+            saveConfig();
+        }
+
     }
 
     public void addTeam(Team team) {
@@ -90,6 +86,7 @@ public class TeamStorage {
                 .map(UUID::toString)
                 .collect(Collectors.toList());
 
+        teamsstoragefile.set("Teams." + team.getTeamName() + ".level", team.getLevel());
         teamsstoragefile.set("Teams." + team.getTeamName() + ".owner", team.getOwner().toString());
         teamsstoragefile.set("Teams." + team.getTeamName() + ".members", memberUUIDStrings);
 
@@ -121,7 +118,6 @@ public class TeamStorage {
     }
 
     public void addMemberToTeam(Team team, UUID playerUUID) {
-
         team.joinTeam(playerUUID,this);
         List<String> memberUUIDs = team.getMembersAsStringList();
         teamsstoragefile.set("Teams." + team.getTeamName() + ".members", memberUUIDs);
@@ -140,6 +136,16 @@ public class TeamStorage {
         team.leaveTeam(playerUUID,this);
         List<String> memberUUIDs = team.getMembersAsStringList();
         teamsstoragefile.set("Teams." + teamName + ".members", memberUUIDs);
+        saveConfig();
+    }
+
+    public void upgrade(Team team, int level) {
+        team.upgrade(this, level);
+        teamsstoragefile.set("Teams." + team.getTeamName() + ".level", level);
+        for (UUID p : team.getMembersOfTeam()) {
+            Player player = Bukkit.getPlayer(p);
+            MessageUtils.sendSuccess(player, "&7" + team.getTeamName() + ",&f has now upgraded to level: " + team.getLevel());
+        }
         saveConfig();
     }
 

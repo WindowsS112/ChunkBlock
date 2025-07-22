@@ -43,7 +43,6 @@ public final class ChunkBlock extends JavaPlugin {
 
         if (!configFile.exists()) saveDefaultConfig();
         config = YamlConfiguration.loadConfiguration(configFile);
-        cSize = getConfig().getDouble("defaultChunkSize");
 
         try {
             if (!borderData.exists()) borderData.createNewFile();

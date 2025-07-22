@@ -8,8 +8,10 @@ import org.bukkit.entity.Player;
 public class ChunkMainCommand {
 
     private final TeamManager teamManager;
+    private final TeamStorage teamStorage;
 
-    public ChunkMainCommand(TeamManager teamManager) {
+    public ChunkMainCommand(TeamManager teamManager, TeamStorage teamStorage) {
+        this.teamStorage = teamStorage;
         this.teamManager = teamManager;
     }
 

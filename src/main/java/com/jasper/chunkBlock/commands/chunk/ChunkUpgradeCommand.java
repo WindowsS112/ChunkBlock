@@ -17,7 +17,7 @@ public class ChunkUpgradeCommand extends SubCommand {
 
     @Override
     public void perform(Player player, String[] args) {
-        ChunkUpgradeGUI ch = new ChunkUpgradeGUI(player, teamStorage.getTeamFromPlayer(player.getUniqueId()));
+        ChunkUpgradeGUI ch = new ChunkUpgradeGUI(player,teamStorage.getTeamFromPlayer(player.getUniqueId()),teamStorage);
         ch.open();
     }
 

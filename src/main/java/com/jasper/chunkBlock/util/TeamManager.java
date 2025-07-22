@@ -11,6 +11,7 @@ public class TeamManager {
 
     private final TeamStorage teamStorage;
     private final BorderStorage borderStorage;
+    private int level = 0;
     Set<UUID> members = new HashSet<>();
 
 
@@ -21,7 +22,7 @@ public class TeamManager {
 
     public Team createTeam(String name, Player owner) {
         // 1. Maak het Team-object en sla het op
-        Team team = new Team(name, owner.getUniqueId(), name, members);
+        Team team = new Team(name, owner.getUniqueId(), name, members, level);
         teamStorage.addTeam(team); // laadt in geheugen én schrijft weg in teams.yml
 
         // 2. Voeg de owner direct toe als member

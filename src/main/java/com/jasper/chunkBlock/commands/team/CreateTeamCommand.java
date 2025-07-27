@@ -1,5 +1,6 @@
 package com.jasper.chunkBlock.commands.team;
 
+import com.jasper.chunkBlock.chunk.Team;
 import com.jasper.chunkBlock.commands.SubCommand;
 import com.jasper.chunkBlock.util.TeamManager;
 import com.jasper.chunkBlock.util.TeamStorage;

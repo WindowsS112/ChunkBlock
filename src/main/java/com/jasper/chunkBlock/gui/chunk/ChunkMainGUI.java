@@ -7,8 +7,8 @@ import com.github.stefvanschie.inventoryframework.pane.Pane;
 import com.github.stefvanschie.inventoryframework.pane.PatternPane;
 import com.github.stefvanschie.inventoryframework.pane.util.Pattern;
 import com.jasper.chunkBlock.ChunkBlock;
-import com.jasper.chunkBlock.commands.border.Border;
-import com.jasper.chunkBlock.commands.team.Team;
+import com.jasper.chunkBlock.chunk.ClaimedChunk;
+import com.jasper.chunkBlock.chunk.Team;
 import com.jasper.chunkBlock.util.MessageUtils;
 import com.jasper.chunkBlock.util.TeamManager;
 import com.jasper.chunkBlock.util.TeamStorage;
@@ -17,23 +17,21 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.List;
-
 
 public class ChunkMainGUI {
 
     private Player player;
     private final Team team;
-    private final Border border;
+    private final ClaimedChunk claimedChunk;
     private TeamStorage teamStorage;
 
-    public ChunkMainGUI(Player player, Team team) {
+    public ChunkMainGUI(Player player, Team team, ClaimedChunk claimedChunk) {
         this.player = player;
         this.team = team;
-        this.border = ChunkBlock.getInstance().getBorderStorage().getBorder(team);
+        this.claimedChunk = claimedChunk;
         teamStorage = ChunkBlock.getInstance().getTeamStorage();
-        if (this.border == null) {
-            throw new IllegalStateException("Border niet d voor team: " + team.getTeamName());
+        if (claimedChunk == null) {
+            throw new IllegalStateException("Chunk not found for: " + team.getTeamName());
         }
     }
 
@@ -43,7 +41,6 @@ public class ChunkMainGUI {
         ChestGui gui = new ChestGui(5, "Chunk - Menu");
         gui.setOnGlobalClick(event -> event.setCancelled(true));
         PatternPane paneel = new PatternPane(0, 0, 9, 5, patroon);
-
 
         // FILLER PANE
         OutlinePane background = new OutlinePane(0, 0, 9, 5, Pane.Priority.LOWEST);
@@ -59,7 +56,7 @@ public class ChunkMainGUI {
         shopMeta.setDisplayName("Chunk - Home");
         shop.setItemMeta(shopMeta);
         navigationPane.addItem(new GuiItem(shop, event -> {
-            player.teleport(border.getDefaultHome());
+            player.teleport(claimedChunk.getHome());
             MessageUtils.sendSuccess(player, "Teleported to your chunk home");
         }));
 
@@ -117,7 +114,6 @@ public class ChunkMainGUI {
         ItemStack chunk = new ItemStack(Material.BEACON);
         ItemMeta  chunkMeta = chunk.getItemMeta();
         chunkMeta.setDisplayName("Chunk - " + team.getTeamName());
-        chunkMeta.setLore();
 
         chunk.setItemMeta(chunkMeta);
         circleCenter.addItem(new GuiItem(chunk, event -> {

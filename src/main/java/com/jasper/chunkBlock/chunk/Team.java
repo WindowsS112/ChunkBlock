@@ -1,9 +1,8 @@
-package com.jasper.chunkBlock.commands.team;
+package com.jasper.chunkBlock.chunk;
 
 import com.jasper.chunkBlock.util.MessageUtils;
 import com.jasper.chunkBlock.util.TeamStorage;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
@@ -67,6 +66,7 @@ public class Team {
             Player member = Bukkit.getPlayer(uuid);
             if (member != null && !member.getUniqueId().equals(player.getUniqueId())) {
                 member.sendMessage(player.getName() + " just joined " + teamName);
+                MessageUtils.sendInfo(member, "&f" + player.getName() +" &7Just joined party: " + teamName );
             }
         }
     }

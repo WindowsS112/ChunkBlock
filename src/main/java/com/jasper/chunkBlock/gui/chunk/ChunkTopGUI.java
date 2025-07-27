@@ -4,7 +4,8 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
-import com.jasper.chunkBlock.commands.team.Team;
+import com.jasper.chunkBlock.chunk.ClaimedChunk;
+import com.jasper.chunkBlock.chunk.Team;
 import com.jasper.chunkBlock.commands.chunk.settings.SettingType;
 import com.jasper.chunkBlock.commands.border.Border;
 import com.jasper.chunkBlock.ChunkBlock;
@@ -27,15 +28,15 @@ public class ChunkTopGUI {
 
     private final Player player;
     private final Team team;
-    private final Border border;
+    private final ClaimedChunk claimedChunk;
 
-    public ChunkTopGUI(Player player, Team team) {
+    public ChunkTopGUI(Player player, Team team, ClaimedChunk claimedChunk) {
         this.player = player;
         this.team = team;
+        this.claimedChunk = claimedChunk;
 
-        this.border = ChunkBlock.getInstance().getBorderStorage().getBorder(team);
-        if (this.border == null) {
-            throw new IllegalStateException("Border niet gevonden voor team: " + team.getTeamName());
+        if (claimedChunk == null) {
+            throw new IllegalStateException("Border not found! : " + team.getTeamName());
         }
     }
 
@@ -98,7 +99,7 @@ public class ChunkTopGUI {
         barrier.setItemMeta(meta);
 
         navigation.addItem(new GuiItem(barrier, event -> {
-            ChunkMainGUI ch = new ChunkMainGUI(player, team);
+            ChunkMainGUI ch = new ChunkMainGUI(player, team, claimedChunk);
             ch.open();
         }), 4, 0);
 
@@ -118,10 +119,10 @@ public class ChunkTopGUI {
             event.setCancelled(true); // voorkom dat item wordt verplaatst
 
             // Toggle setting
-            border.toggleSetting(setting);
+            claimedChunk.toggleSetting(setting);
 
             // Herlaad GUI
-            new ChunkSettingsGUI(player, team).open();
+            new ChunkSettingsGUI(player, team, claimedChunk).open();
         });
         return guiItem;
     }

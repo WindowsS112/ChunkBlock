@@ -4,8 +4,8 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
-import com.jasper.chunkBlock.commands.team.Team;
-import com.jasper.chunkBlock.commands.border.Border;
+import com.jasper.chunkBlock.chunk.ClaimedChunk;
+import com.jasper.chunkBlock.chunk.Team;
 import com.jasper.chunkBlock.ChunkBlock;
 import com.jasper.chunkBlock.util.MessageUtils;
 import com.jasper.chunkBlock.util.TeamManager;
@@ -27,16 +27,16 @@ public class ChunkPlayersGUI {
 
     private final Player player;
     private final Team team;
-    private final Border border;
+    private final ClaimedChunk claimedChunk;
     private TeamManager teamManager;
 
-    public ChunkPlayersGUI(Player player, Team team) {
+    public ChunkPlayersGUI(Player player, Team team, ClaimedChunk claimedChunk) {
         this.player = player;
         this.team = team;
+        this.claimedChunk = claimedChunk;
         this.teamManager = ChunkBlock.getInstance().getTeamManager();
-        this.border = ChunkBlock.getInstance().getBorderStorage().getBorder(team);
-        if (this.border == null) {
-            throw new IllegalStateException("Border niet gevonden voor team: " + team.getTeamName());
+        if (claimedChunk == null) {
+            throw new IllegalStateException("Chunk not found for: " + team.getTeamName());
         }
     }
 
@@ -111,7 +111,7 @@ public class ChunkPlayersGUI {
         barrier.setItemMeta(meta);
 
         navigation.addItem(new GuiItem(barrier, event -> {
-            ChunkMainGUI ch = new ChunkMainGUI(player, team);
+            ChunkMainGUI ch = new ChunkMainGUI(player, team, claimedChunk);
             ch.open();
         }), 4, 0);
 

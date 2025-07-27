@@ -1,7 +1,7 @@
 package com.jasper.chunkBlock.commands.border;
 
 import com.jasper.chunkBlock.ChunkBlock;
-import com.jasper.chunkBlock.commands.team.Team;
+import com.jasper.chunkBlock.chunk.Team;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -38,10 +38,6 @@ public class Border {
         }
     }
 
-    public void setHome(Location location) {
-        defaultHome = location;
-        ChunkBlock.getInstance().getBorderStorage().saveBorder(owner);
-    }
 
     //–– Getters ––//
     public Location getDefaultHome() {
@@ -63,13 +59,13 @@ public class Border {
         return radius;
     }
 
-    public Location getCenter() {
-        World world = Bukkit.getWorld(worldName);
-        if (world == null) {
-            throw new IllegalStateException("Wereld niet gevonden: " + worldName);
-        }
-        return new Location(world, x + 0.5, 64, z + 0.5); // 0.5 = midden van blok
-    }
+//    public Location getCenter() {
+//        World world = Bukkit.getWorld(worldName);
+//        if (world == null) {
+//            throw new IllegalStateException("Wereld niet gevonden: " + worldName);
+//        }
+//        return new Location(world, x + 0.5, 64, z + 0.5); // 0.5 = midden van blok
+//    }
 
 
     public Map<SettingType, Boolean> getSettings() {
@@ -89,16 +85,6 @@ public class Border {
         settings.put(type, value);
     }
 
-
-    //–– Setters ––//
-    public void setAllowPvP(boolean allowPvP) {
-        this.allowPvP = allowPvP;
-    }
-
-    public void setAllowBuild(boolean allowBuild) {
-        this.allowBuild = allowBuild;
-    }
-
     /**
      * Maak een nieuwe WorldBorder die je per-player kunt toewijzen.
      * @return een volledig geconfigureerde, lege WorldBorder
@@ -115,41 +101,5 @@ public class Border {
         wb.setWarningDistance(5);
         wb.setWarningTime(10);
         return wb;
-    }
-
-    /**
-     * Pas deze border toe op alle leden van het team.
-     */
-    public void applyToTeam() {
-        WorldBorder wb = createPlayerBorder();
-        Set<UUID> members = owner.getMembersOfTeam();
-        for (UUID uuid : members) {
-            Player player = Bukkit.getPlayer(uuid);
-            if (player != null && player.isOnline()) {
-                player.setWorldBorder(wb);
-            }
-        }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Border)) return false;
-        Border border = (Border) o;
-        return x == border.x &&
-                z == border.z &&
-                Double.compare(border.radius, radius) == 0 &&
-                Objects.equals(worldName, border.worldName);
-    }
-
-    @Override
-    public String toString() {
-        return "Border{" +
-                "world='" + worldName + '\'' +
-                ", x=" + x +
-                ", z=" + z +
-                ", radius=" + radius +
-                ", owner=" + owner.getOwner().toString() +
-                '}';
     }
 }

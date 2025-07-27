@@ -1,7 +1,6 @@
 package com.jasper.chunkBlock.commands.border;
 
 import com.jasper.chunkBlock.commands.SubCommand;
-import com.jasper.chunkBlock.util.BorderStorage;
 import org.bukkit.entity.Player;
 
 public class BorderBypassCommand extends SubCommand {

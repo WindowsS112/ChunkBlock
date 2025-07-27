@@ -1,12 +1,10 @@
 package com.jasper.chunkBlock.commands.chunk;
 
+import com.jasper.chunkBlock.chunk.ChunkStorage;
 import com.jasper.chunkBlock.commands.SubCommand;
-import com.jasper.chunkBlock.commands.border.Border;
-import com.jasper.chunkBlock.util.BorderStorage;
-import com.jasper.chunkBlock.commands.team.Team;
+import com.jasper.chunkBlock.chunk.Team;
 import com.jasper.chunkBlock.util.MessageUtils;
 import com.jasper.chunkBlock.util.TeamStorage;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -18,9 +16,8 @@ public class ChunkSetHomeCommand extends SubCommand {
     private TeamStorage teamStorage;
     private YamlConfiguration borderData;
 
-    public ChunkSetHomeCommand(String name, String description, String syntax,Team team, BorderStorage borderStorage, TeamStorage teamStorage) {
+    public ChunkSetHomeCommand(String name, String description, String syntax, Team team, ChunkStorage chunkStorage, TeamStorage teamStorage) {
         super(name, description, syntax);
-        this.borderStorage = borderStorage;
         this.teamStorage = teamStorage;
         this.team = team;
     }
@@ -30,8 +27,10 @@ public class ChunkSetHomeCommand extends SubCommand {
         Team playerTeam = teamStorage.getTeamFromPlayer(player.getUniqueId());
         if (teamStorage.checkTeamExist(playerTeam)) {
             Location home = player.getLocation().clone();
-            Border border = borderStorage.getBorder(playerTeam);
-            border.setHome(home);
+//            ClaimedChunk claimedChunk = ChunkStorage.getChunk();
+//            claimedChunk.setHome(home);
+//            Border border = borderStorage.getBorder(playerTeam);
+//            border.setHome(home);
             MessageUtils.sendSuccess(player,"Succesfully set new home");
         } else {
             MessageUtils.sendError(player,"&cYou don't have a team");

@@ -4,10 +4,9 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
-import com.jasper.chunkBlock.commands.team.Team;
+import com.jasper.chunkBlock.chunk.ClaimedChunk;
+import com.jasper.chunkBlock.chunk.Team;
 import com.jasper.chunkBlock.commands.chunk.settings.SettingType;
-import com.jasper.chunkBlock.commands.border.Border;
-import com.jasper.chunkBlock.ChunkBlock;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.flags.StateFlag;
@@ -26,14 +25,14 @@ public class ChunkSettingsGUI {
 
     private final Player player;
     private final Team team;
-    private final Border border;
+    private final ClaimedChunk claimedChunk;
 
-    public ChunkSettingsGUI(Player player, Team team) {
+    public ChunkSettingsGUI(Player player, Team team, ClaimedChunk claimedChunk) {
         this.player = player;
         this.team = team;
+        this.claimedChunk = claimedChunk;
 
-        this.border = ChunkBlock.getInstance().getBorderStorage().getBorder(team);
-        if (this.border == null) {
+        if (claimedChunk == null) {
             throw new IllegalStateException("Border not found: " + team.getTeamName());
         }
     }
@@ -47,11 +46,11 @@ public class ChunkSettingsGUI {
         RegionManager manager = WorldGuard.getInstance()
                 .getPlatform()
                 .getRegionContainer()
-                .get(BukkitAdapter.adapt(border.getCenter().getWorld()));
+                .get(BukkitAdapter.adapt(claimedChunk.getCenter().getWorld()));
 
         if (manager == null) return;
 
-        String regionId = "team_" + border.getOwner().getTeamName(); // <-- HIER de juiste ID bepalen
+        String regionId = "team_" + claimedChunk.getTeamId(); // <-- HIER de juiste ID bepalen
         ProtectedRegion region = manager.getRegion(regionId);
 
         if (region != null) {
@@ -112,7 +111,7 @@ public class ChunkSettingsGUI {
         barrier.setItemMeta(meta);
 
         navigation.addItem(new GuiItem(barrier, event -> {
-            ChunkMainGUI ch = new ChunkMainGUI(player, team);
+            ChunkMainGUI ch = new ChunkMainGUI(player, team, claimedChunk);
             ch.open();
         }), 4, 0);
 
@@ -131,10 +130,10 @@ public class ChunkSettingsGUI {
             event.setCancelled(true); // voorkom dat item wordt verplaatst
 
             // Toggle setting
-            border.toggleSetting(setting);
+            claimedChunk.toggleSetting(setting);
 
             // Herlaad GUI
-            new ChunkSettingsGUI(player, team).open();
+            new ChunkSettingsGUI(player, team,claimedChunk).open();
         });
         return guiItem;
     }

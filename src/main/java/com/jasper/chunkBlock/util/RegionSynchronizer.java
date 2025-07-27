@@ -1,7 +1,7 @@
 package com.jasper.chunkBlock.util;
 
 import com.jasper.chunkBlock.commands.border.Border;
-import com.jasper.chunkBlock.commands.team.Team;
+import com.jasper.chunkBlock.chunk.Team;
 import com.jasper.chunkBlock.commands.chunk.settings.SettingType;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;

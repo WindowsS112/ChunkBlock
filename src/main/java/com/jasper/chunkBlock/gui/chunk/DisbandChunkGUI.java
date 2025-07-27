@@ -1,17 +1,11 @@
 package com.jasper.chunkBlock.gui.chunk;
 
-import com.github.stefvanschie.inventoryframework.gui.GuiItem;
-import com.github.stefvanschie.inventoryframework.gui.type.HopperGui;
-import com.github.stefvanschie.inventoryframework.pane.StaticPane;
-import com.jasper.chunkBlock.commands.team.Team;
+import com.jasper.chunkBlock.chunk.Team;
 import com.jasper.chunkBlock.gui.base.ConfirmationGUI;
-import com.jasper.chunkBlock.util.BorderStorage;
 import com.jasper.chunkBlock.util.MessageUtils;
 import com.jasper.chunkBlock.util.RegionSynchronizer;
 import com.jasper.chunkBlock.util.TeamStorage;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 public class DisbandChunkGUI extends ConfirmationGUI {
 

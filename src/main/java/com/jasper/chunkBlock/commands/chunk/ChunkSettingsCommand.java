@@ -2,7 +2,7 @@ package com.jasper.chunkBlock.commands.chunk;
 
 import com.jasper.chunkBlock.commands.SubCommand;
 import com.jasper.chunkBlock.gui.chunk.ChunkSettingsGUI;
-import com.jasper.chunkBlock.commands.team.Team;
+import com.jasper.chunkBlock.chunk.Team;
 import com.jasper.chunkBlock.util.TeamStorage;
 import org.bukkit.entity.Player;
 

@@ -1,10 +1,9 @@
 package com.jasper.chunkBlock;
 
 import com.jasper.chunkBlock.commands.CommandManager;
+import com.jasper.chunkBlock.database.ChunkDatabase;
 import com.jasper.chunkBlock.listeners.PlayerJoinListener;
-import com.jasper.chunkBlock.util.BorderStorage;
-import com.jasper.chunkBlock.commands.team.Team;
-import com.jasper.chunkBlock.util.MessageUtils;
+import com.jasper.chunkBlock.chunk.Team;
 import com.jasper.chunkBlock.util.TeamManager;
 import com.jasper.chunkBlock.util.TeamStorage;
 import org.bukkit.Bukkit;
@@ -17,6 +16,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 
 public final class ChunkBlock extends JavaPlugin {
 
@@ -36,11 +36,12 @@ public final class ChunkBlock extends JavaPlugin {
     private double cSize;
     private Team team;
     private FileConfiguration config;
+    private ChunkDatabase chunkDatabase;
+
 
     @Override
     public void onEnable() {
         instance = this;
-
         if (!configFile.exists()) saveDefaultConfig();
         config = YamlConfiguration.loadConfiguration(configFile);
 
@@ -67,12 +68,31 @@ public final class ChunkBlock extends JavaPlugin {
 
         getCommand("c").setExecutor(new CommandManager(borderStorage, cSize, borderData,this, teamStorage, team,teamManager));
 
+        try {
+            if(!getDataFolder().exists()) {
+                getDataFolder().mkdirs();
+            }
+            chunkDatabase = new ChunkDatabase(getDataFolder().getAbsolutePath() + "/ChunkBlock.db");
+        } catch(SQLException ex) {
+            ex.printStackTrace();
+            System.out.println("Failed to connect to the database! " + ex.getMessage());
+            Bukkit.getPluginManager().disablePlugin(this);
+        }
+
+
         Bukkit.getLogger().info("[ChunkBlock] -> Has Been Started!");
         Bukkit.getLogger().info("[ChunkBlock] -> Version: " + getDescription().getVersion());
         Bukkit.broadcastMessage("§a[ChunkBlock] Plugin is enabled!");
     }
 
     public void onDisable(){
+        if (chunkDatabase != null) {
+            try {
+                chunkDatabase.closeConnection();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
         instance = null;
     }
     public static ChunkBlock getInstance() {

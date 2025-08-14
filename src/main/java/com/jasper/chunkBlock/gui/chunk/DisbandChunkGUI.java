@@ -1,32 +1,30 @@
 package com.jasper.chunkBlock.gui.chunk;
 
-import com.jasper.chunkBlock.chunk.Team;
+import com.jasper.chunkBlock.chunk.ClaimedChunk;
+import com.jasper.chunkBlock.team.Team;
 import com.jasper.chunkBlock.gui.base.ConfirmationGUI;
+
+import com.jasper.chunkBlock.team.TeamService;
 import com.jasper.chunkBlock.util.MessageUtils;
-import com.jasper.chunkBlock.util.RegionSynchronizer;
-import com.jasper.chunkBlock.util.TeamStorage;
 import org.bukkit.entity.Player;
 
 public class DisbandChunkGUI extends ConfirmationGUI {
 
     private Player player;
-    private Team team;
-    private BorderStorage borderStorage;
-    private TeamStorage teamStorage;
+    private TeamService teamService;
+    private ClaimedChunk claimedChunk;
 
-    public DisbandChunkGUI(Player player, Team team, BorderStorage borderStorage, TeamStorage teamStorage) {
+    public DisbandChunkGUI(Player player, TeamService teamService, ClaimedChunk claimedChunk) {
         super(player, "Confirmation");
-        this.team = team;
+        this.teamService = teamService;
         this.player = player;
-        this.borderStorage = borderStorage;
-        this.teamStorage = teamStorage;
+        this.claimedChunk = claimedChunk;
     }
 
     @Override
     protected void onConfirm() {
-        RegionSynchronizer.deleteRegion(team,borderStorage.getBorder(team));
-                    teamStorage.removeTeam(team, player);
-                    borderStorage.removeBorder(team);
+//        RegionSynchronizer.deleteRegion(team,claimedChunk.getBorder(team));
+        teamService.deleteTeam(player.getUniqueId());
         MessageUtils.sendSuccess(player, "Chunk has succesfully been disbanded!");
     }
 

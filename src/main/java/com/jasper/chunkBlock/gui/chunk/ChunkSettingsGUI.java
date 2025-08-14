@@ -5,8 +5,8 @@ import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
 import com.jasper.chunkBlock.chunk.ClaimedChunk;
-import com.jasper.chunkBlock.chunk.Team;
-import com.jasper.chunkBlock.commands.chunk.settings.SettingType;
+import com.jasper.chunkBlock.team.Team;
+import com.jasper.chunkBlock.chunk.settings.SettingType;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.flags.StateFlag;
@@ -46,7 +46,7 @@ public class ChunkSettingsGUI {
         RegionManager manager = WorldGuard.getInstance()
                 .getPlatform()
                 .getRegionContainer()
-                .get(BukkitAdapter.adapt(claimedChunk.getCenter().getWorld()));
+                .get(BukkitAdapter.adapt(claimedChunk.getCenter(claimedChunk).getWorld()));
 
         if (manager == null) return;
 
@@ -111,7 +111,7 @@ public class ChunkSettingsGUI {
         barrier.setItemMeta(meta);
 
         navigation.addItem(new GuiItem(barrier, event -> {
-            ChunkMainGUI ch = new ChunkMainGUI(player, team, claimedChunk);
+            ChunkMainGUI ch = new ChunkMainGUI(player, team);
             ch.open();
         }), 4, 0);
 

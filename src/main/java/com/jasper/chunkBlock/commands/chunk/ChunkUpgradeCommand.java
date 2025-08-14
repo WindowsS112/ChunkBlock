@@ -1,24 +1,35 @@
 package com.jasper.chunkBlock.commands.chunk;
 
+import com.jasper.chunkBlock.ChunkBlock;
+import com.jasper.chunkBlock.chunk.ClaimedChunk;
 import com.jasper.chunkBlock.commands.SubCommand;
+import com.jasper.chunkBlock.database.Database;
 import com.jasper.chunkBlock.gui.chunk.ChunkUpgradeGUI;
-import com.jasper.chunkBlock.util.TeamStorage;
-import org.bukkit.Chunk;
+import com.jasper.chunkBlock.team.Team;
+import com.jasper.chunkBlock.team.TeamService;
 import org.bukkit.entity.Player;
 
 public class ChunkUpgradeCommand extends SubCommand {
 
-    private final TeamStorage teamStorage;
+    private final TeamService teamService;
 
-    public ChunkUpgradeCommand(String name, String description, String syntax, TeamStorage teamStorage) {
+    public ChunkUpgradeCommand(String name, String description, String syntax, TeamService teamService) {
         super(name, description, syntax);
-        this.teamStorage = teamStorage;
+        this.teamService = teamService;
     }
 
     @Override
     public void perform(Player player, String[] args) {
-        ChunkUpgradeGUI ch = new ChunkUpgradeGUI(player,teamStorage.getTeamFromPlayer(player.getUniqueId()),teamStorage);
-        ch.open();
+        Team team = teamService.getTeamByPlayer(player.getUniqueId());
+        Database database = ChunkBlock.getInstance().getDatabase();
+        ClaimedChunk claimedChunk = teamService.getChunkByTeam(team);
+
+        claimedChunk.setLevel(15);
+        database.updateChunkLevelAsync(claimedChunk, 15);
+
+        //database.updateChunkLevel(claimedChunk,13);
+        //        ChunkUpgradeGUI ch = new ChunkUpgradeGUI(player,team,teamService.getChunkByTeam(team));
+        //        ch.open(player, team);
     }
 
     @Override

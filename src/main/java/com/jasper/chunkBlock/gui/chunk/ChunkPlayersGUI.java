@@ -5,10 +5,10 @@ import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
 import com.jasper.chunkBlock.chunk.ClaimedChunk;
-import com.jasper.chunkBlock.chunk.Team;
+import com.jasper.chunkBlock.team.Team;
 import com.jasper.chunkBlock.ChunkBlock;
 import com.jasper.chunkBlock.util.MessageUtils;
-import com.jasper.chunkBlock.util.TeamManager;
+import com.jasper.chunkBlock.team.TeamService;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -28,21 +28,19 @@ public class ChunkPlayersGUI {
     private final Player player;
     private final Team team;
     private final ClaimedChunk claimedChunk;
-    private TeamManager teamManager;
+    private TeamService teamManager;
 
     public ChunkPlayersGUI(Player player, Team team, ClaimedChunk claimedChunk) {
         this.player = player;
         this.team = team;
         this.claimedChunk = claimedChunk;
-        this.teamManager = ChunkBlock.getInstance().getTeamManager();
+        this.teamManager = ChunkBlock.getInstance().getTeamService();
         if (claimedChunk == null) {
             throw new IllegalStateException("Chunk not found for: " + team.getTeamName());
         }
     }
 
     public void open() {
-
-        teamManager = ChunkBlock.getInstance().getTeamManager();
         ChestGui gui = new ChestGui(4, "Chunk - Players");
 
         PaginatedPane pages = new PaginatedPane(0, 0, 9, 3);
@@ -70,7 +68,7 @@ public class ChunkPlayersGUI {
             GuiItem guiItem = new GuiItem(skull, event -> {
                 event.setCancelled(true);
 
-                teamManager.removeMember(team.getTeamName(), memberUUID);
+//                teamManager.removeMember(team.getTeamName(), memberUUID);
                 MessageUtils.sendSuccess(player,  team.getOwner().toString());
             });
 
@@ -111,7 +109,7 @@ public class ChunkPlayersGUI {
         barrier.setItemMeta(meta);
 
         navigation.addItem(new GuiItem(barrier, event -> {
-            ChunkMainGUI ch = new ChunkMainGUI(player, team, claimedChunk);
+            ChunkMainGUI ch = new ChunkMainGUI(player, team);
             ch.open();
         }), 4, 0);
 

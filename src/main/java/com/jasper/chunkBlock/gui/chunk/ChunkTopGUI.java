@@ -5,10 +5,8 @@ import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.Pane;
 import com.jasper.chunkBlock.chunk.ClaimedChunk;
-import com.jasper.chunkBlock.chunk.Team;
-import com.jasper.chunkBlock.commands.chunk.settings.SettingType;
-import com.jasper.chunkBlock.commands.border.Border;
-import com.jasper.chunkBlock.ChunkBlock;
+import com.jasper.chunkBlock.team.Team;
+import com.jasper.chunkBlock.chunk.settings.SettingType;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -65,7 +63,6 @@ public class ChunkTopGUI {
             settingsPane.addItem(guiItem);
         }
 
-
         pages.addPane(0, settingsPane); // Voeg settings toe aan pagina 0
         gui.addPane(pages);
 
@@ -99,7 +96,7 @@ public class ChunkTopGUI {
         barrier.setItemMeta(meta);
 
         navigation.addItem(new GuiItem(barrier, event -> {
-            ChunkMainGUI ch = new ChunkMainGUI(player, team, claimedChunk);
+            ChunkMainGUI ch = new ChunkMainGUI(player, team);
             ch.open();
         }), 4, 0);
 

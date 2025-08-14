@@ -1,10 +1,9 @@
 package com.jasper.chunkBlock.commands.team;
 
-import com.jasper.chunkBlock.chunk.Team;
 import com.jasper.chunkBlock.commands.SubCommand;
-import com.jasper.chunkBlock.util.TeamManager;
-import com.jasper.chunkBlock.util.TeamStorage;
-import org.bukkit.ChatColor;
+import com.jasper.chunkBlock.team.Team;
+import com.jasper.chunkBlock.team.TeamService;
+import com.jasper.chunkBlock.util.MessageUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import java.util.UUID;
@@ -13,16 +12,14 @@ public class CreateTeamCommand extends SubCommand {
 
     private String teamName;
     private final JavaPlugin plugin;
-    private final TeamStorage teamStorage;
     private UUID owner;
-    private TeamManager teamManager;
+    private TeamService teamService;
 
-    public CreateTeamCommand(String name, String description, String syntax, JavaPlugin plugin, String teamName, TeamStorage teamStorage, TeamManager teamManager) {
+    public CreateTeamCommand(String name, String description, String syntax, JavaPlugin plugin, String teamName, TeamService teamService) {
         super(name, description, syntax);
         this.plugin = plugin;
         this.teamName = teamName;
-        this.teamStorage = teamStorage;
-        this.teamManager = teamManager;
+        this.teamService = teamService;
     }
 
     @Override
@@ -46,11 +43,10 @@ public class CreateTeamCommand extends SubCommand {
             teamName = args[1];
             owner = player.getUniqueId();
 
-            if (!teamStorage.isPlayerInAnyTeam(owner)) {
-                Team team = teamManager.createTeam(teamName, player);
-                player.sendMessage(ChatColor.GREEN + "Succesfully created: " + team.getTeamName() + "!");
+            if (!teamService.isPlayerInAnyTeam(owner)) {
+                teamService.createTeam(teamName, player);
             } else {
-                player.sendMessage(ChatColor.RED + "You are already in a chunkparty, leave this one first!");
+                MessageUtils.sendError(player, "&cYou are already in a chunkparty, leave this one first!");
             }
 
         }

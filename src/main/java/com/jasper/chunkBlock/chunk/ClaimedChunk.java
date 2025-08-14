@@ -1,7 +1,7 @@
 package com.jasper.chunkBlock.chunk;
 
 import com.jasper.chunkBlock.ChunkBlock;
-import com.jasper.chunkBlock.commands.chunk.settings.SettingType;
+import com.jasper.chunkBlock.chunk.settings.SettingType;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -13,36 +13,78 @@ import java.util.*;
 public class ClaimedChunk {
 
     private final String teamId;
-    private final Team team;
+    private final String chunkId;
     private final String world;
+    private WorldBorder worldBorder;
     private final double radius;
     private Location home;
+    private String owner;
     private final int x;
     private final int z;
-    private int level = 1;
-    private double xp = 0.0;
+    private int level;
+    private double xp;
     private final Map<String, Object> upgrades = new HashMap<>();
     private final Map<SettingType, Boolean> settings = new HashMap<>();
 
-    public ClaimedChunk(Team team, String world, double radius, int x, int z, String teamId) {
-        this.team = team;
+
+    // aanmaken
+    public ClaimedChunk(String world, double radius, int x, int z, String teamId, String chunkId ) {
         this.world = world;
         this.radius = radius;
         this.x = x;
         this.z = z;
         this.teamId = teamId;
+        this.chunkId = chunkId;
+        for (SettingType type : SettingType.values()) {
+            settings.put(type, false);
+        }
+        this.level = 1;
+        this.xp = 0.0;
+    }
+
+    public ClaimedChunk(String chunkid, String teamid, String ownerUuid, int level, double levelxp, String world, int centerX, int centerZ, int borderRadius) {
+        this.world = world;
+        this.radius = borderRadius;
+        this.owner = ownerUuid;
+        this.x = centerX;
+        this.z = centerZ;
+        this.teamId = teamid;
+        this.chunkId = chunkid;
+        this.xp = xp;
+        this.level = level;
         for (SettingType type : SettingType.values()) {
             settings.put(type, false);
         }
     }
 
-    public Location getCenter() {
+    public Location getCenter(ClaimedChunk claimedChunk) {
         World w = Bukkit.getWorld(world);
         if (w == null) {
             throw new IllegalStateException("World not found! : " + world);
         }
-        return new Location(w, x + 0.5, 64, z + 0.5);
+
+        // Y-waarde kan je zo laten of ook uit db halen als je dat wilt
+        double y = 64;
+
+        return new Location(w, x, y, z);
     }
+
+
+    public WorldBorder createBorder(Player player) {
+        WorldBorder border = Bukkit.createWorldBorder();
+        Location location = player.getLocation();
+
+        border.setCenter(location);
+        border.setSize(level * radius * 2); // 32 blokken per chunk, *2 voor diameter
+
+        player.setWorldBorder(border);
+        return border;
+    }
+
+    public WorldBorder removeBorder() {
+        return worldBorder = null;
+    }
+
 
     public String getWorld() { return world; }
     public int getX() { return x; }
@@ -54,42 +96,32 @@ public class ClaimedChunk {
     public Map<String, Object> getUpgrades() { return upgrades; }
     public Map<SettingType, Boolean> getSettings() { return settings; }
     public Location getHome() { return home; }
-
-    public void applyToTeam() {
-        // Implementeer createPlayerBorder() of verwijder deze regel
-        // WorldBorder wb = createPlayerBorder();
-        Set<UUID> members = team.getMembersOfTeam();
-        for (UUID uuid : members) {
-            Player player = Bukkit.getPlayer(uuid);
-            if (player != null && player.isOnline()) {
-                // player.setWorldBorder(wb);
-            }
-        }
+    public String getChunkId() {
+        return chunkId;
     }
-
     public void toggleSetting(SettingType type) {
         settings.put(type, !isSettingEnabled(type));
-        ChunkBlock.getInstance().getBorderStorage().saveBorder(team);
     }
-
     public void setSetting(SettingType type, boolean value) {
         settings.put(type, value);
     }
-
     public void setHome(Location location) {
         home = location;
-        // ChunkBlock.getInstance().getBorderStorage().saveBorder(team);
     }
-
-    public void setLevel(int level) { this.level = level; }
     public void setXp(double xp) { this.xp = xp; }
     public void addXp(double amount) { this.xp += amount; }
     public void setUpgrade(String key, Object value) { this.upgrades.put(key, value); }
     public Object getUpgrade(String key) { return this.upgrades.get(key); }
     public boolean hasUpgrade(String key) { return this.upgrades.containsKey(key); }
-
     public int getClaimRadius() {
-        return this.level;
+        return (int) radius;
+    }
+    public UUID getOwner() {
+        return UUID.fromString(owner);
+    }
+
+    public WorldBorder getBorder() {
+        return worldBorder;
     }
 
     @Override
@@ -100,15 +132,8 @@ public class ClaimedChunk {
         return x == other.x && z == other.z && world.equals(other.world);
     }
 
-    @Override
-    public String toString() {
-        return "ClaimedChunk{" +
-                "world='" + world + '\'' +
-                ", x=" + x +
-                ", z=" + z +
-                ", radius=" + radius +
-                ", team=" + team +
-                '}';
+    public void setLevel(int newLevel) {
+        this.level = newLevel;
     }
 
     @Override

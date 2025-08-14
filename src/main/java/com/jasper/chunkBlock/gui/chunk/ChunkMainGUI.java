@@ -7,11 +7,12 @@ import com.github.stefvanschie.inventoryframework.pane.Pane;
 import com.github.stefvanschie.inventoryframework.pane.PatternPane;
 import com.github.stefvanschie.inventoryframework.pane.util.Pattern;
 import com.jasper.chunkBlock.ChunkBlock;
+import com.jasper.chunkBlock.chunk.ChunkStorage;
 import com.jasper.chunkBlock.chunk.ClaimedChunk;
-import com.jasper.chunkBlock.chunk.Team;
+import com.jasper.chunkBlock.team.Team;
 import com.jasper.chunkBlock.util.MessageUtils;
-import com.jasper.chunkBlock.util.TeamManager;
-import com.jasper.chunkBlock.util.TeamStorage;
+import com.jasper.chunkBlock.team.TeamService;
+import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -22,21 +23,20 @@ public class ChunkMainGUI {
 
     private Player player;
     private final Team team;
-    private final ClaimedChunk claimedChunk;
-    private TeamStorage teamStorage;
+    private ChunkStorage chunkStorage;
 
-    public ChunkMainGUI(Player player, Team team, ClaimedChunk claimedChunk) {
+    public ChunkMainGUI(Player player, Team team) {
         this.player = player;
         this.team = team;
-        this.claimedChunk = claimedChunk;
-        teamStorage = ChunkBlock.getInstance().getTeamStorage();
-        if (claimedChunk == null) {
-            throw new IllegalStateException("Chunk not found for: " + team.getTeamName());
-        }
     }
 
     public void open() {
-        TeamManager teamManager = ChunkBlock.getInstance().getTeamManager();
+        chunkStorage = ChunkBlock.getInstance().getChunkStorage();
+        ClaimedChunk claimedChunk = chunkStorage.getChunkByTeamId(team.getTeamId());
+        if (claimedChunk == null) {
+            MessageUtils.sendError(player, "§cChunk not found!");
+            return;
+        }
 
         ChestGui gui = new ChestGui(5, "Chunk - Menu");
         gui.setOnGlobalClick(event -> event.setCancelled(true));
@@ -66,7 +66,7 @@ public class ChunkMainGUI {
         settingsMeta.setDisplayName("Chunk - Settings");
         settings.setItemMeta(settingsMeta);
         navigationPane.addItem(new GuiItem(settings, event -> {
-            ChunkSettingsGUI ch = new ChunkSettingsGUI(player, team);
+            ChunkSettingsGUI ch = new ChunkSettingsGUI(player, team, claimedChunk);
             ch.open();
         }));
 
@@ -86,7 +86,7 @@ public class ChunkMainGUI {
         players.setItemMeta(playerMeta);
 
         navigationPane.addItem(new GuiItem(players, event -> {
-            ChunkPlayersGUI chunkPlayersGUI = new ChunkPlayersGUI(player,team);
+            ChunkPlayersGUI chunkPlayersGUI = new ChunkPlayersGUI(player,team, claimedChunk);
             chunkPlayersGUI.open();
         }));
 
@@ -96,7 +96,7 @@ public class ChunkMainGUI {
         chunkTopMeta.setDisplayName("Chunk - Top");
         chunkTop.setItemMeta(chunkTopMeta);
         navigationPane.addItem(new GuiItem(chunkTop, event -> {
-            ChunkTopGUI chunkTopGUI = new ChunkTopGUI(player,team);
+            ChunkTopGUI chunkTopGUI = new ChunkTopGUI(player,team,claimedChunk);
             chunkTopGUI.open();
         }));
 
@@ -106,8 +106,8 @@ public class ChunkMainGUI {
         upgradeMeta.setDisplayName("Chunk - Upgrade");
         upgrade.setItemMeta(upgradeMeta);
         navigationPane.addItem(new GuiItem(upgrade, event -> {
-            ChunkUpgradeGUI upgradeGUI = new ChunkUpgradeGUI(player,team,teamStorage);
-            upgradeGUI.open();
+            ChunkUpgradeGUI upgradeGUI = new ChunkUpgradeGUI(player,team, claimedChunk);
+            upgradeGUI.open(player,team);
         }));
 
         // CHUNK CIRCLE STATS

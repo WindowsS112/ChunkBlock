@@ -1,111 +1,161 @@
 package com.jasper.chunkBlock;
 
+import com.jasper.chunkBlock.chunk.ChunkStorage;
+import com.jasper.chunkBlock.chunk.levels.LevelConfig;
+import com.jasper.chunkBlock.chunk.levels.LevelStorage;
 import com.jasper.chunkBlock.commands.CommandManager;
-import com.jasper.chunkBlock.database.ChunkDatabase;
+import com.jasper.chunkBlock.database.Database;
 import com.jasper.chunkBlock.listeners.PlayerJoinListener;
-import com.jasper.chunkBlock.chunk.Team;
-import com.jasper.chunkBlock.util.TeamManager;
-import com.jasper.chunkBlock.util.TeamStorage;
+import com.jasper.chunkBlock.team.TeamService;
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
+import org.bukkit.Material;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-
 import org.bukkit.plugin.java.JavaPlugin;
-
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public final class ChunkBlock extends JavaPlugin {
 
-    private BorderStorage borderStorage;
-    private TeamManager teamManager;
-    private TeamStorage teamStorage;
-    private Chunk chunk;
     private static ChunkBlock instance;
 
-
-    private File configFile = new File(getDataFolder(), "config.yml");
-    private File borderData = new File(getDataFolder(), "borders.yml");
-    private File teamsData = new File(getDataFolder(), "teams.yml");
-
-    private YamlConfiguration teamsFile;
-    YamlConfiguration modifyFile = YamlConfiguration.loadConfiguration(borderData);
-    private double cSize;
-    private Team team;
     private FileConfiguration config;
-    private ChunkDatabase chunkDatabase;
+    private File levelsConfig;
+    private FileConfiguration levels;
+
+    private Database database;
+    private ChunkStorage chunkStorage;
+    private TeamService teamService;
+    private LevelStorage levelStorage;
 
 
     @Override
     public void onEnable() {
         instance = this;
+
+        // Config inladen
+        if (!getDataFolder().exists()) getDataFolder().mkdirs();
+        File configFile = new File(getDataFolder(), "config.yml");
         if (!configFile.exists()) saveDefaultConfig();
         config = YamlConfiguration.loadConfiguration(configFile);
+        createLevelsConfig();
 
+
+        // Database connectie opzetten
         try {
-            if (!borderData.exists()) borderData.createNewFile();
-            if (!teamsData.exists()) teamsData.createNewFile();
-        } catch (IOException e) {
+            database = new Database(getDataFolder().getAbsolutePath() + "/chunkblock.db");
+        } catch (SQLException e) {
             e.printStackTrace();
-        }
-
-        teamsFile = YamlConfiguration.loadConfiguration(teamsData);
-
-        this.teamStorage = new TeamStorage(teamsData, this, teamsFile);
-        this.teamStorage.loadTeams();
-
-        this.borderStorage = new BorderStorage(borderData, this, modifyFile,teamStorage);
-
-        TeamManager teamManager = new TeamManager(teamStorage,borderStorage);
-
-        teamStorage.loadTeams();
-        borderStorage.loadAllBorders();
-
-        getServer().getPluginManager().registerEvents(new PlayerJoinListener(borderStorage, this,teamStorage), this);
-
-        getCommand("c").setExecutor(new CommandManager(borderStorage, cSize, borderData,this, teamStorage, team,teamManager));
-
-        try {
-            if(!getDataFolder().exists()) {
-                getDataFolder().mkdirs();
-            }
-            chunkDatabase = new ChunkDatabase(getDataFolder().getAbsolutePath() + "/ChunkBlock.db");
-        } catch(SQLException ex) {
-            ex.printStackTrace();
-            System.out.println("Failed to connect to the database! " + ex.getMessage());
+            Bukkit.getLogger().severe("Failed to connect to SQLite database: " + e.getMessage());
+            Bukkit.getLogger().severe("FEADSDSADSADSAKODMSADSKOASDN");
             Bukkit.getPluginManager().disablePlugin(this);
+            return;
         }
 
+        // Services initialiseren
+        this.chunkStorage = new ChunkStorage();
+        this.teamService = new TeamService(database, this.chunkStorage);
+        teamService.loadAllTeams();
+        this.levelStorage = new LevelStorage(this);
 
-        Bukkit.getLogger().info("[ChunkBlock] -> Has Been Started!");
-        Bukkit.getLogger().info("[ChunkBlock] -> Version: " + getDescription().getVersion());
-        Bukkit.broadcastMessage("§a[ChunkBlock] Plugin is enabled!");
+        createTestLevels();
+
+        // Commands & events registreren
+        getCommand("c").setExecutor(new CommandManager(this, teamService));
+        getServer().getPluginManager().registerEvents(new PlayerJoinListener(this,teamService,database), this);
+
+        Bukkit.getLogger().info("[ChunkBlock] Plugin enabled ✔");
+        Bukkit.getLogger().info("[ChunkBlock] Version: " + getDescription().getVersion());
     }
 
-    public void onDisable(){
-        if (chunkDatabase != null) {
+    @Override
+    public void onDisable() {
+        if (database != null) {
             try {
-                chunkDatabase.closeConnection();
+                database.closeConnection();
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
         }
         instance = null;
+        Bukkit.getLogger().info("[ChunkBlock] Plugin disabled.");
     }
+
+    public void createTestLevels() {
+        LevelStorage manager = levelStorage;
+
+        List<String> unlocks = new ArrayList<>();
+        unlocks.add("Unlock 1");
+        Map<Material, Integer> blocksLevel1 = new HashMap<>();
+        blocksLevel1.put(Material.STONE, 100);
+        blocksLevel1.put(Material.DIRT, 50);
+
+        LevelConfig level1 = new LevelConfig(1, 2, blocksLevel1, unlocks);
+        manager.setLevelConfig(1, level1);
+
+
+        List<String> unlocks2 = new ArrayList<>();
+        unlocks.add("Unlock 1");
+        Map<Material, Integer> blocksLevel2 = new HashMap<>();
+        blocksLevel2.put(Material.STONE, 200);
+        blocksLevel2.put(Material.IRON_BLOCK, 25);
+
+        LevelConfig level2 = new LevelConfig(2, 3, blocksLevel2, unlocks2);
+        manager.setLevelConfig(2, level2);
+
+        manager.saveLevelsToConfig(levelStorage.getLevelConfigs()); // sla op naar levels.yml
+    }
+
+
+
+    public void createLevelsConfig() {
+        levelsConfig = new File(getDataFolder(), "levels.yml");
+        if (!levelsConfig.exists()) {
+            levelsConfig.getParentFile().mkdirs();
+            saveResource("levels.yml", false);
+        }
+
+        levels = new YamlConfiguration();
+        try {
+            levels.load(levelsConfig);
+        } catch (IOException | InvalidConfigurationException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public LevelStorage getLevelStorage() {
+        return levelStorage;
+    }
+
     public static ChunkBlock getInstance() {
         return instance;
     }
-    public BorderStorage getBorderStorage() {
-        return this.borderStorage;
-    }
+
     public FileConfiguration getCustomConfig() {
         return config;
     }
-    public TeamStorage getTeamStorage() {
-        return this.teamStorage;
+
+    public FileConfiguration getLevelsConfig() {
+        return levels;
     }
-    public TeamManager getTeamManager() { return this.teamManager; }
+
+    public Database getDatabase() {
+        return database;
+    }
+
+    public TeamService getTeamService() {
+        return teamService;
+    }
+
+    public ChunkStorage getChunkStorage() {
+        return chunkStorage;
+    }
+
 }

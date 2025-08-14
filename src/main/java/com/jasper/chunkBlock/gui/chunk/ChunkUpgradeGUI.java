@@ -1,20 +1,25 @@
 package com.jasper.chunkBlock.gui.chunk;
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
-import com.github.stefvanschie.inventoryframework.pane.OutlinePane;
-import com.github.stefvanschie.inventoryframework.pane.Pane;
-import com.github.stefvanschie.inventoryframework.pane.PatternPane;
-import com.github.stefvanschie.inventoryframework.pane.util.Pattern;
-import com.jasper.chunkBlock.chunk.Team;
-import com.jasper.chunkBlock.util.TeamStorage;
+import com.github.stefvanschie.inventoryframework.pane.*;
+import com.jasper.chunkBlock.ChunkBlock;
+import com.jasper.chunkBlock.chunk.ClaimedChunk;
+import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
+import com.jasper.chunkBlock.chunk.levels.LevelConfig;
+import com.jasper.chunkBlock.chunk.levels.LevelStorage;
+import com.jasper.chunkBlock.database.Database;
+import com.jasper.chunkBlock.team.Team;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
-import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -22,108 +27,131 @@ public class ChunkUpgradeGUI {
 
     private final Player player;
     private final Team team;
-    private TeamStorage teamStorage;
+    FileConfiguration config = ChunkBlock.getInstance().getConfig();
+    private ClaimedChunk claimedChunk;
+    LevelStorage levelStorage = ChunkBlock.getInstance().getLevelStorage();
 
-    private int teamLevel;
 
-    public ChunkUpgradeGUI(Player player, Team team, TeamStorage teamStorage) {
+    private static final int TOTAL_LEVELS = 50;
+
+    public ChunkUpgradeGUI(Player player, Team team, ClaimedChunk claimedChunk ) {
         this.player = player;
-        this.teamStorage = teamStorage;
         this.team = team;
+        this.claimedChunk = claimedChunk;
     }
 
-    public void open() {
-        ChestGui gui = new ChestGui(5, "Chunk - Upgrade");
-        StaticPane pane = new StaticPane(0, 0, 9, 4);
+    public void open(Player player, Team team) {
+        int currentLevel = claimedChunk.getLevel();
+        Bukkit.getLogger().info("level: " + currentLevel);
+
+        ChestGui gui = new ChestGui(6, ChatColor.DARK_GRAY + "Chunk - Upgrade");
         gui.setOnGlobalClick(event -> event.setCancelled(true));
-        PatternPane paneel = new PatternPane(0, 0, 9, 5, patroon);
-        int level = getTeamLevel();
+        StaticPane levelPane = new StaticPane(0, 0, 9, 5);
+        StaticPane blueFiller = new StaticPane(0, 0, 9, 6);
 
-        ///////////////
-        /// LEVELS ///
-        //////////////
+        int[][] blueFillerPattern = {
+                {6},
+                {0,1,2,3,4,6},
+                {6},
+                {1,2,3,4,5,6},
+                {6},
+                {1,2,3,5,6,7,8}
+        };
 
-        // Level 1
-        ItemStack levelOne = new ItemStack(Material.GRAY_WOOL);
-        ItemMeta levelOneMeta = levelOne.getItemMeta();
-        levelOneMeta.setDisplayName("Level 1 - " + (team.getLevel() >= 1 ? ChatColor.GREEN + "Unlocked" : ChatColor.RED + "Locked"));
-        levelOne.setItemMeta(levelOneMeta);
-        pane.addItem(new GuiItem(levelOne, event -> {
-            teamStorage.upgrade(team, 1);
-            player.closeInventory();
-            new ChunkUpgradeGUI(player, team, teamStorage).open();
-        }), 1, 2);
+        int[][] snakePattern = {
+                {0, 1, 2, 3, 4, 5},
+                {5},
+                {5, 4, 3, 2, 1, 0},
+                {0},
+                {0, 1, 2, 3, 4, 5}
+        };
 
-        // Level 2
-        ItemStack levelTwo = new ItemStack(Material.GREEN_WOOL);
-        ItemMeta levelTwoMeta = levelTwo.getItemMeta();
-        levelTwoMeta.setDisplayName("Level 2 - " + (team.getLevel() >= 2 ? ChatColor.GREEN + "Unlocked" : ChatColor.RED + "Locked"));
-        levelTwoMeta.setLore(
-                List.of(ChatColor.GRAY + "Cost: 10,000 Coins",
-                        ChatColor.GRAY + "Unlocks 5 features",
-                        " ",
-                        ChatColor.WHITE + "Click to upgrade!"
-        ));
-        levelTwo.setItemMeta(levelTwoMeta);
-        pane.addItem(new GuiItem(levelTwo, event -> {
-            teamStorage.upgrade(team, 2);
-            player.closeInventory();
-            new ChunkUpgradeGUI(player, team, teamStorage).open();
-        }), 4, 2);
+        int levelCount = 1;
 
-        // Level 3
-        ItemStack levelThree = new ItemStack(Material.ORANGE_WOOL);
-        ItemMeta levelThreeMeta = levelThree.getItemMeta();
-        levelThreeMeta.setDisplayName("Level 3 - " + (team.getLevel() >= 3 ? ChatColor.GREEN + "Unlocked" : ChatColor.RED + "Locked"));
-        levelThree.setItemMeta(levelThreeMeta);
-        pane.addItem(new GuiItem(levelThree, event -> {
-            teamStorage.upgrade(team, 3);
-            player.closeInventory();
-            new ChunkUpgradeGUI(player, team, teamStorage).open();
-        }), 7, 2);
+        for (int y = 0; y < snakePattern.length; y++) {
+            int[] rowPositions = snakePattern[y];
+
+            for (int posX : rowPositions) {
+                if (levelCount > TOTAL_LEVELS) break;
+                LevelConfig config = levelStorage.getLevelConfig(levelCount);
+
+                Material color = levelCount <= currentLevel ? Material.LIME_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE;
+                ItemStack item = new ItemStack(color);
+                ItemMeta meta = item.getItemMeta();
+                meta.setDisplayName(ChatColor.YELLOW + "Level " + levelCount);
+                if (config != null) {
+                    meta.setLore(config.toLore());
+                } else {
+                    meta.setLore(Collections.singletonList(ChatColor.RED + "Geen configuratie gevonden."));
+                }
+                item.setItemMeta(meta);
+
+                GuiItem guiItem = new GuiItem(item);
+                levelPane.addItem(guiItem, posX, y);
+
+                levelCount++;
+            }
+        }
+
+        for (int y = 0; y < blueFillerPattern.length; y++) {
+            int[] rowPositions = blueFillerPattern[y];
+            for (int posX : rowPositions) {
+                Material color = Material.BLUE_STAINED_GLASS_PANE;
+                ItemStack item = new ItemStack(color);
+                ItemMeta meta = item.getItemMeta();
+                meta.setDisplayName("");
+                item.setItemMeta(meta);
+
+                GuiItem guiItem = new GuiItem(item);
+                blueFiller.addItem(guiItem, posX, y);
+            }
+        }
 
 
+        // Progress bar pane
+        StaticPane progressPane = new StaticPane(0, 5, 9, 1);
 
+        ItemStack progressItem = new ItemStack(Material.BOOK);
+        ItemMeta progressMeta = progressItem.getItemMeta();
+        progressMeta.setDisplayName(ChatColor.WHITE + "Level -> " + ChatColor.GRAY +  currentLevel);
 
+        int percentage = (int) (((double) currentLevel / TOTAL_LEVELS) * 100);
+        StringBuilder bar = new StringBuilder();
 
+        bar.append(ChatColor.GRAY).append("[");
 
+        for (int i = 1; i <= 20; i++) {
+            if (i <= (percentage / 5)) {
+                bar.append(ChatColor.GREEN).append("|");
+            } else {
+                bar.append(ChatColor.RED).append("|");
+            }
+        }
 
+        bar.append(ChatColor.GRAY).append("]");
 
+        progressMeta.setLore(Collections.singletonList(bar.toString() + ChatColor.GRAY + " (" + percentage + "%)"));
+        progressItem.setItemMeta(progressMeta);
 
+        GuiItem progressGuiItem = new GuiItem(progressItem);
+        progressPane.addItem(progressGuiItem, 4, 0);
 
-        // BEACON LEVEL
-        ItemStack leveld = new ItemStack(Material.BEACON);
-        ItemMeta levelMeta = leveld.getItemMeta();
-        levelMeta.setDisplayName(team.getLevel() + " - " + team.getTeamName() + " Chunk");
-        leveld.setItemMeta(levelMeta);
-        pane.addItem(new GuiItem(leveld, event -> {
-            // Logic
-        }), 4, 0);
+        ItemStack barrier = new ItemStack(Material.BARRIER);
+        ItemMeta meta = barrier.getItemMeta();
+        meta.setDisplayName("§cBack");
+        barrier.setItemMeta(meta);
 
-        // FILLER BLUE
-        OutlinePane background = new OutlinePane(0, 0, 9, 5, Pane.Priority.LOWEST);
-        background.addItem(new GuiItem(new ItemStack(Material.BLUE_STAINED_GLASS_PANE)));
-        background.setRepeat(true);
+        progressPane.addItem(new GuiItem(barrier, event -> {
+            ChunkMainGUI ch = new ChunkMainGUI(player, team);
+            ch.open();
+        }), 0, 0);
 
-        // FILLER CIRCLE
-        paneel.bindItem('1', new GuiItem(new ItemStack(Material.GRAY_STAINED_GLASS_PANE)));
-        paneel.bindItem('2', new GuiItem(new ItemStack(Material.GREEN_STAINED_GLASS_PANE)));
-        paneel.bindItem('3', new GuiItem(new ItemStack(Material.ORANGE_STAINED_GLASS_PANE)));
+        gui.addPane(blueFiller);  // eerst achtergrond
+        gui.addPane(levelPane);   // dan levels erbovenop
+        gui.addPane(progressPane);// progressbar helemaal bovenaan
 
-        gui.addPane(pane);
-        gui.addPane(paneel);
-        gui.addPane(background);
         gui.show(player);
     }
-
-    // FILLER LIGHT BLUE
-    Pattern patroon = new Pattern(
-            "111222333",
-            "111222333",
-            "111222333",
-            "111222333",
-            "000000000"
-    );
 
     public int getTeamLevel() {
         return team.getLevel();

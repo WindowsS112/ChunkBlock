@@ -1,16 +1,14 @@
 package com.jasper.chunkBlock.commands.border;
 
-import com.jasper.chunkBlock.ChunkBlock;
-import com.jasper.chunkBlock.chunk.Team;
+import com.jasper.chunkBlock.team.Team;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
-import org.bukkit.entity.Player;
 
 import java.util.*;
 
-import com.jasper.chunkBlock.commands.chunk.settings.SettingType;
+import com.jasper.chunkBlock.chunk.settings.SettingType;
 
 public class Border {
 
@@ -78,7 +76,7 @@ public class Border {
 
     public void toggleSetting(SettingType type) {
         settings.put(type, !isSettingEnabled(type));
-        ChunkBlock.getInstance().getBorderStorage().saveBorder(owner);
+//        ChunkBlock.getInstance().getBorderStorage().saveBorder(owner);
     }
 
     public void setSetting(SettingType type, boolean value) {

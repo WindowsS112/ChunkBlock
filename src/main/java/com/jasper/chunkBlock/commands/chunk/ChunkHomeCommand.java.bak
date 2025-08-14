@@ -1,8 +1,7 @@
 package com.jasper.chunkBlock.commands.chunk;
 
 import com.jasper.chunkBlock.commands.SubCommand;
-import com.jasper.chunkBlock.chunk.Team;
-import com.jasper.chunkBlock.util.TeamStorage;
+import com.jasper.chunkBlock.team.Team;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 

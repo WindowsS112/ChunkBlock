@@ -6,7 +6,6 @@ import org.bukkit.entity.Player;
 public class BorderBypassCommand extends SubCommand {
 
     private boolean hasBypass = false;
-    private BorderStorage borderStorage;
 
     public BorderBypassCommand(String name, String description, String syntax, BorderStorage borderStorage) {
         super(name,description,syntax);

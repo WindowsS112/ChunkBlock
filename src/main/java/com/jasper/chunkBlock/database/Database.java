@@ -86,7 +86,6 @@ public class Database {
                         rs.getString("teamid"),
                         rs.getString("owner_uuid"),
                         rs.getInt("level"),
-                        rs.getDouble("levelxp"),
                         rs.getString("world"),
                         rs.getInt("center_x"),
                         rs.getInt("center_z"),
@@ -99,7 +98,6 @@ public class Database {
         }
         return null;
     }
-
 
     public void addTeam(Team team) {
         try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO teams (teamid, owner, teamname ) VALUES (?, ?, ?)")) {

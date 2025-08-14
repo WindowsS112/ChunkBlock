@@ -26,23 +26,7 @@ public class ClaimedChunk {
     private final Map<String, Object> upgrades = new HashMap<>();
     private final Map<SettingType, Boolean> settings = new HashMap<>();
 
-
-    // aanmaken
-    public ClaimedChunk(String world, double radius, int x, int z, String teamId, String chunkId ) {
-        this.world = world;
-        this.radius = radius;
-        this.x = x;
-        this.z = z;
-        this.teamId = teamId;
-        this.chunkId = chunkId;
-        for (SettingType type : SettingType.values()) {
-            settings.put(type, false);
-        }
-        this.level = 1;
-        this.xp = 0.0;
-    }
-
-    public ClaimedChunk(String chunkid, String teamid, String ownerUuid, int level, double levelxp, String world, int centerX, int centerZ, int borderRadius) {
+    public ClaimedChunk(String chunkid, String teamid, String ownerUuid, int level, String world, int centerX, int centerZ, int borderRadius) {
         this.world = world;
         this.radius = borderRadius;
         this.owner = ownerUuid;

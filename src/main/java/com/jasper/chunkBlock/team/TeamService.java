@@ -44,7 +44,8 @@ public class TeamService {
         teamsById.put(teamId, team);
         teamsByPlayer.put(player.getUniqueId(), team);
         World world = player.getWorld();
-        ClaimedChunk chunk = new ClaimedChunk(world.getName(), config.getInt("defaultChunkSize"), (int) player.getX(), (int) player.getZ(),teamId, chunkId);
+//        ClaimedChunk chunk = new ClaimedChunk(world.getName(), config.getInt("defaultChunkSize"), (int) player.getX(), (int) player.getZ(),teamId, chunkId);
+        ClaimedChunk chunk = new ClaimedChunk(chunkId, teamId, player.getUniqueId().toString(), level, world.getName(), (int) player.getX(), (int) player.getZ(), config.getInt("defaultChunkSize"));
         chunk.setHome(player.getLocation());
 
         chunk.createBorder(player);
@@ -108,7 +109,6 @@ public class TeamService {
                         rs.getString("teamid"),
                         (rs.getString("owner_uuid")),
                         rs.getInt("level"),
-                        rs.getDouble("levelxp"),
                         rs.getString("world"),
                         rs.getInt("center_x"),
                         rs.getInt("center_z"),
@@ -129,15 +129,14 @@ public class TeamService {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 String chunkid = rs.getString("chunkid");
-                rs.getString("owner_uuid");
+                String owner = rs.getString("owner_uuid");
                 int level = rs.getInt("level");
-                double levelxp = rs.getDouble("levelxp");
                 String world = rs.getString("world");
                 int x = rs.getInt("center_x");
                 int z = rs.getInt("center_z");
                 int radius = rs.getInt("border_radius");
 
-                return new ClaimedChunk(world,radius,x,z,teamId,chunkid); // constructor moet hiermee matchen
+                return new ClaimedChunk(chunkid, teamId, owner, level, world, x, z, radius); // constructor moet hiermee matchen
             }
         } catch (SQLException e) {
             e.printStackTrace();

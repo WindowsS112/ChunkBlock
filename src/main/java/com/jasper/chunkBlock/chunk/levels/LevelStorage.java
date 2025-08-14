@@ -65,6 +65,7 @@ public class LevelStorage {
         if (!config.contains(path)) return null;
 
         int chunkSize = config.getInt(path + ".chunkSize");
+        int cost = config.getInt(path + ".cost");
 
         Map<String, Object> rawMap = config.getConfigurationSection("levels." + level + ".max-blocks").getValues(false);
         Map<Material, Integer> maxBlocks = new HashMap<>();
@@ -79,7 +80,7 @@ public class LevelStorage {
         // Unlocks
         List<String> unlocks = config.getStringList(path + ".unlocks");
 
-        return new LevelConfig(level, chunkSize, maxBlocks, unlocks);
+        return new LevelConfig(level, chunkSize, maxBlocks, unlocks, cost);
     }
 
     public Map<Integer, LevelConfig> getLevelConfigs() {

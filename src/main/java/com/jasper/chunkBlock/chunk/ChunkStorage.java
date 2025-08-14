@@ -30,22 +30,18 @@ public class ChunkStorage {
                 String teamId = rs.getString("teamid");
                 UUID owner = UUID.fromString(rs.getString("owner_uuid"));
                 int level = rs.getInt("level");
-                double xp = rs.getDouble("levelxp");
                 String world = rs.getString("world");
                 int centerX = rs.getInt("center_x");
                 int centerZ = rs.getInt("center_z");
                 int borderRadius = rs.getInt("border_radius");
 
-                return new ClaimedChunk(chunkId, teamId, owner.toString(), level, xp, world, centerX, centerZ, borderRadius);
+                return new ClaimedChunk(chunkId, teamId, owner.toString(), level, world, centerX, centerZ, borderRadius);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
     }
-
-
-
 
     public void addClaimedChunk(String teamId, ClaimedChunk claimedChunk) {
         chunksByTeamId.put(teamId,claimedChunk);

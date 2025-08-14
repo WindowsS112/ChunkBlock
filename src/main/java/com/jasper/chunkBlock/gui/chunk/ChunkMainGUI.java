@@ -9,6 +9,7 @@ import com.github.stefvanschie.inventoryframework.pane.util.Pattern;
 import com.jasper.chunkBlock.ChunkBlock;
 import com.jasper.chunkBlock.chunk.ChunkStorage;
 import com.jasper.chunkBlock.chunk.ClaimedChunk;
+import com.jasper.chunkBlock.database.Database;
 import com.jasper.chunkBlock.team.Team;
 import com.jasper.chunkBlock.util.MessageUtils;
 import com.jasper.chunkBlock.team.TeamService;
@@ -23,7 +24,7 @@ public class ChunkMainGUI {
 
     private Player player;
     private final Team team;
-    private ChunkStorage chunkStorage;
+    private Database database;
 
     public ChunkMainGUI(Player player, Team team) {
         this.player = player;
@@ -31,8 +32,8 @@ public class ChunkMainGUI {
     }
 
     public void open() {
-        chunkStorage = ChunkBlock.getInstance().getChunkStorage();
-        ClaimedChunk claimedChunk = chunkStorage.getChunkByTeamId(team.getTeamId());
+        this.database = ChunkBlock.getInstance().getDatabase();
+        ClaimedChunk claimedChunk = database.getChunkByOwner(player.getUniqueId());
         if (claimedChunk == null) {
             MessageUtils.sendError(player, "§cChunk not found!");
             return;

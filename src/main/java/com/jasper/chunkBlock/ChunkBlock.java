@@ -65,8 +65,6 @@ public final class ChunkBlock extends JavaPlugin {
         teamService.loadAllTeams();
         this.levelStorage = new LevelStorage(this);
 
-        createTestLevels();
-
         // Commands & events registreren
         getCommand("c").setExecutor(new CommandManager(this, teamService));
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(this,teamService,database), this);
@@ -87,33 +85,6 @@ public final class ChunkBlock extends JavaPlugin {
         instance = null;
         Bukkit.getLogger().info("[ChunkBlock] Plugin disabled.");
     }
-
-    public void createTestLevels() {
-        LevelStorage manager = levelStorage;
-
-        List<String> unlocks = new ArrayList<>();
-        unlocks.add("Unlock 1");
-        Map<Material, Integer> blocksLevel1 = new HashMap<>();
-        blocksLevel1.put(Material.STONE, 100);
-        blocksLevel1.put(Material.DIRT, 50);
-
-        LevelConfig level1 = new LevelConfig(1, 2, blocksLevel1, unlocks);
-        manager.setLevelConfig(1, level1);
-
-
-        List<String> unlocks2 = new ArrayList<>();
-        unlocks.add("Unlock 1");
-        Map<Material, Integer> blocksLevel2 = new HashMap<>();
-        blocksLevel2.put(Material.STONE, 200);
-        blocksLevel2.put(Material.IRON_BLOCK, 25);
-
-        LevelConfig level2 = new LevelConfig(2, 3, blocksLevel2, unlocks2);
-        manager.setLevelConfig(2, level2);
-
-        manager.saveLevelsToConfig(levelStorage.getLevelConfigs()); // sla op naar levels.yml
-    }
-
-
 
     public void createLevelsConfig() {
         levelsConfig = new File(getDataFolder(), "levels.yml");

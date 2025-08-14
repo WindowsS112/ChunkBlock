@@ -12,12 +12,14 @@ public class LevelConfig {
     private final int chunkSize;
     private final Map<Material, Integer> maxBlocks;
     private final List<String> unlocks;
+    private final int cost;
 
-    public LevelConfig(int level, int chunkSize, Map<Material, Integer> maxBlocks, List<String> unlocks) {
+    public LevelConfig(int level, int chunkSize, Map<Material, Integer> maxBlocks, List<String> unlocks, int cost) {
         this.level = level;
         this.chunkSize = chunkSize;
         this.maxBlocks = maxBlocks;
         this.unlocks = unlocks;
+        this.cost = cost;
     }
 
     public List<String> toLore() {
@@ -30,6 +32,9 @@ public class LevelConfig {
 
             lore.add(ChatColor.DARK_GRAY + "- " + ChatColor.GREEN + name + ": " + ChatColor.YELLOW + entry.getValue());
         }
+
+        lore.add("");
+        lore.add(ChatColor.GRAY + "Cost: " + ChatColor.WHITE + cost);
 
         return lore;
     }
